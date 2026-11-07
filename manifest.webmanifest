@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "IDECO LiveVoice",
+  "short_name": "LiveVoice",
+  "description": "Thông báo, trợ lý AI và phát LIVE cho đội ngũ IDECO.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f3f0",
+  "theme_color": "#a9233e",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

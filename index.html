@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>IDECO · LiveVoice Studio</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-gradient: linear-gradient(to right, #4f46e5, #4338ca);
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --input-border: #e2e8f0;
+            --spacing-base: 16px;
+        }
+
+        body {
+            font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            background-color: var(--bg-color);
+            margin: 0; padding: 0;
+            color: var(--text-color);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-header {
+            background: white;
+            color: #0f172a;
+            border-bottom: 1px solid #e2e8f0;
+            padding: var(--spacing-base);
+            text-align: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .app-header h1 { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.025em; }
+
+        .container {
+            padding: var(--spacing-base);
+            padding-bottom: 200px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: var(--spacing-base);
+            margin-bottom: var(--spacing-base);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 {
+            font-size: 1rem; margin-top: 0; color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 0.5rem; margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        label {
+            display: block; font-weight: 600;
+            margin-bottom: 0.5rem; font-size: 0.875rem; color: #475569;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%; padding: 0.75rem;
+            border: 1px solid var(--input-border);
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            font-size: 1rem;
+            background-color: #f8fafc;
+            color: #1e293b;
+            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+        }
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .textarea-wrapper { position: relative; display: flex; flex-direction: column; }
+
+        textarea {
+            height: 120px;
+            min-height: 80px;
+            resize: vertical;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom: none;
+        }
+
+        /* Hiệu ứng khi đang LIVE */
+        textarea.live-mode {
+            border: 2px solid #e74c3c !important;
+            background-color: #fff8f8 !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+        }
+
+        .resize-handle {
+            height: 24px;
+            background-color: #e9ecef;
+            border: 1px solid var(--input-border);
+            border-top: 1px solid #ddd;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: ns-resize; touch-action: none; color: #888;
+        }
+        .resize-handle::after {
+            content: ""; width: 40px; height: 4px;
+            border-top: 2px solid #bbb; border-bottom: 2px solid #bbb;
+        }
+
+        .btn-clear {
+            margin-top: 0.75rem;
+            background-color: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            padding: 0.5rem 0.875rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem; font-weight: 500;
+            cursor: pointer;
+            width: auto; display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .btn-clear:active { background-color: #fee2e2; }
+
+        .note {
+            font-size: 0.8125rem; color: #64748b;
+            background: #f1f5f9;
+            padding: 0.625rem; border-radius: 0.5rem;
+            margin-bottom: 1rem; line-height: 1.5;
+            border: 1px solid #e2e8f0;
+        }
+
+        .day-group { margin-bottom: 15px; position: relative; }
+        .day-label {
+            display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 5px;
+        }
+        .day-name { font-weight: bold; color: var(--primary-color); }
+        .day-id {
+            font-size: 12px; color: #999;
+            background: #eee; padding: 2px 6px; border-radius: 4px;
+        }
+
+        .sticky-footer {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: white;
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            z-index: 100;
+            display: flex; flex-direction: column; gap: 0.75rem;
+        }
+
+        .btn-save {
+            width: 100%; padding: 0.875rem;
+            background: var(--primary-color);
+            color: white; border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem; font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: background-color 0.2s;
+        }
+        .btn-save:hover { background: #4338ca; }
+        .btn-save:active { transform: scale(0.98); }
+
+        #status { text-align: center; font-size: 13px; font-weight: 500; }
+        .loading { color: #666; }
+        .success { color: #28a745; }
+        .error   { color: #dc3545; }
+
+        /* Mic thường */
+        .microphone-container {
+            display: flex; gap: 10px;
+            align-items: stretch;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        #microphone-button {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0; border-radius: 9999px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.875rem; font-weight: 500; color: #334155;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            flex: 1 1 auto; min-width: 160px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #microphone-button:active {
+            transform: scale(0.97);
+            background: #e2e8f0;
+        }
+        #microphone-button.listening {
+            background: #ef4444;
+            color: white; border-color: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+            animation: pulse-mobile 1.5s infinite;
+        }
+        @keyframes pulse-mobile {
+            0% { opacity: 1; }
+            50% { opacity: 0.9; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+            100% { opacity: 1; }
+        }
+
+        #speech-status {
+            font-size: 0.875rem; color: #64748b;
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px;
+            flex: 2 1 200px;
+            border: 1px solid #e2e8f0;
+            min-height: 20px;
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+            display: flex; align-items: center;
+        }
+
+        .word-count {
+            font-size: 0.75rem; color: #94a3b8;
+            margin-top: 0.375rem; text-align: right;
+        }
+
+        @media (min-width: 600px) {
+            .schedule-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* ===== LIVE VOICE BUTTON ===== */
+        .btn-live-voice {
+            width: 100%; padding: 0.875rem;
+            background: #ef4444;
+            color: white; border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem; font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        .btn-live-voice:hover { background: #dc2626; }
+        .btn-live-voice:active { transform: scale(0.98); }
+        .btn-live-voice.broadcasting {
+            background: #dc2626;
+            animation: pulse-live 1.5s infinite;
+        }
+        @keyframes pulse-live {
+            0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70%  { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* LIVE BANNER */
+        .live-banner {
+            display: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.8125rem; font-weight: 600;
+            align-items: center; gap: 0.5rem;
+            border: 1px solid #fecaca;
+        }
+        .live-banner.active { display: flex; }
+        .live-banner-dot {
+            width: 0.5rem; height: 0.5rem;
+            background: #dc2626; border-radius: 50%;
+            animation: blink-dot 1s infinite;
+        }
+        @keyframes blink-dot {
+            0%,100% { opacity: 1; }
+            50%     { opacity: 0.3; }
+        }
+
+        /* NÂNG CAO VĂN BẢN */
+        .enhance-section {
+            margin-top: 1rem;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 1rem;
+        }
+        .enhance-label {
+            font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: -0.025em;
+            margin-bottom: 0.75rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .enhance-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .btn-enhance {
+            border: 1px solid transparent;
+            border-radius: 9999px;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem; font-weight: 600;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+        }
+        .btn-enhance-leader {
+            background-color: #4f46e5;
+            color: white; border-color: #818cf8;
+        }
+        .btn-enhance-leader:hover { background-color: #4338ca; }
+        
+        .btn-enhance-chat {
+            background-color: #10b981;
+            color: white; border-color: #6ee7b7;
+        }
+        .btn-enhance-chat:hover { background-color: #059669; }
+        
+        .btn-enhance-huyen {
+            background: linear-gradient(to right, #ec4899, #f43f5e);
+            color: white; border-color: #fb7185;
+        }
+        .btn-enhance-huyen:hover { opacity: 0.9; }
+        
+        .btn-enhance:active { transform: scale(0.98); }
+        .btn-enhance:disabled { opacity: 0.6; cursor: default; }
+        .enhance-btn-icon { opacity: 0.8; transition: opacity 0.2s; }
+        .btn-enhance:hover .enhance-btn-icon { opacity: 1; }
+        .enhance-spinner {
+            display: inline-block;
+            width: 1rem; height: 1rem;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .enhance-result-box {
+            display: none;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 0.75rem;
+        }
+        .enhance-result-box.visible { display: block; }
+        .enhance-result-header {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        .enhance-result-title { font-size: 0.8125rem; font-weight: 700; color: #4338ca; }
+        .enhance-result-text {
+            font-size: 0.9375rem; line-height: 1.6; color: #1e293b;
+            white-space: pre-wrap; word-break: break-word;
+        }
+        .btn-apply-enhance {
+            background: #4f46e5; color: white;
+            border: none; border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem; font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-apply-enhance:hover { background: #4338ca; }
+        .btn-apply-enhance:active { transform: scale(0.98); }
+        .enhance-note {
+            font-size: 0.6875rem; color: #94a3b8;
+            margin-top: 0.75rem; text-align: right;
+        }
+
+        /* Vùng chọn giọng */
+        .accent-selector-container {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .accent-label {
+            font-size: 0.8125rem; font-weight: 600; color: #475569;
+            display: flex; align-items: center; gap: 0.4rem;
+        }
+        .accent-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background-color: #f8fafc;
+            font-size: 0.875rem;
+            color: #1e293b;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .accent-select:focus {
+            border-color: #4f46e5;
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+
+        /* ===== LIBRARY SECTION ===== */
+        .library-section {
+            margin-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+        .library-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .library-title {
+            font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: -0.025em;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .btn-save-library {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem; font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-save-library:hover { background: #e2e8f0; }
+
+        .library-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .library-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .library-item:hover { border-color: #cbd5e1; }
+        
+        .library-item-info {
+            flex: 1;
+            min-width: 0;
+            margin-right: 1rem;
+        }
+        .library-item-name {
+            font-size: 0.875rem; font-weight: 600; color: #1e293b;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: 0.125rem;
+        }
+        .library-item-preview {
+            font-size: 0.75rem; color: #64748b;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .library-item-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        .btn-lib-action {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-lib-play { color: #10b981; }
+        .btn-lib-play:hover { background: #ecfdf5; border-color: #10b981; }
+        .btn-lib-delete { color: #ef4444; }
+        .btn-lib-delete:hover { background: #fef2f2; border-color: #ef4444; }
+
+        /* ===== VIEWER OVERLAY ===== */
+        #broadcast-viewer {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 2000;
+            padding: 2rem;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+        #broadcast-viewer.active { display: flex; }
+        
+        .viewer-card {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            animation: slide-up 0.4s ease-out;
+        }
+        @keyframes slide-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .viewer-header {
+            background: #ef4444;
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .viewer-header h3 { margin: 0; font-size: 1.125rem; font-weight: 700; }
+        
+        .viewer-content {
+            padding: 2rem 1.5rem;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            color: #1e293b;
+            min-height: 150px;
+            max-height: 60vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-weight: 500;
+        }
+
+        .viewer-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-read-done {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.75rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4);
+        }
+        .btn-read-done:active { transform: scale(0.95); }
+        .btn-read-done:hover { background: #4338ca; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background: #4f46e5;
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Styles for Temperature/Length Slider */
+        .temp-slider-container {
+            margin-bottom: 1.25rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+        .temp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .temp-label {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #334155;
+        }
+        .temp-value-label {
+            font-size: 0.75rem;
+            background: #3b82f6;
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 1rem;
+            font-weight: 700;
+        }
+        .temp-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #cbd5e1;
+            outline: none;
+        }
+        .temp-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .temp-guides {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+        .btn-lib-schedule { color: #f59e0b; }
+        .btn-lib-schedule:hover { background: #fffbeb; border-color: #f59e0b; }
+/* LiveVoice Studio — responsive design system */
+#panel-editor>div[style]>div{flex-wrap:wrap}
+
+:root{--primary-color:#a9233e;--primary-gradient:linear-gradient(120deg,#a9233e,#ca4762);--bg-color:#f4f3f0;--text-color:#252b38;--input-border:#e0e2e6}
+*{box-sizing:border-box} [hidden]{display:none!important} body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55} button,input,select,textarea{font:inherit} button{cursor:pointer;min-height:44px} button:focus-visible,a:focus-visible{outline:3px solid #d6884f;outline-offset:3px} button:disabled{cursor:not-allowed;opacity:.55} input,select{min-height:46px} input[type=checkbox]{min-height:24px;width:23px;accent-color:#a9233e} textarea{font-size:16px;line-height:1.8;min-height:220px;background:#fafbfC;border-radius:14px 14px 0 0!important;padding:20px} input[type=password],input[type=number]{width:100%;padding:12px;border:1px solid var(--input-border);border-radius:10px;background:#fafbfc;font-size:16px;color:#252b38} select{max-width:100%;font-size:16px!important} .app-header{padding:15px max(24px,calc((100vw - 1200px)/2));display:flex;align-items:center;justify-content:space-between;text-align:left;background:#fffc;backdrop-filter:blur(16px);border-color:#e9e6e2} .brand{display:flex;align-items:center;gap:11px;color:#292d37;text-decoration:none;font-size:19px;font-weight:800;letter-spacing:-.7px}.brand b{font-weight:400}.brand small{display:block;font-size:9px;letter-spacing:2px;color:#85858b;font-weight:600}.brand-mark{display:grid;place-items:center;width:40px;height:42px;background:#a9233e;border-radius:12px;color:white;font:italic bold 31px Georgia;box-shadow:0 4px 9px #a9233e20}.header-pill{font-size:11px;color:#526a5d;border:1px solid #dbe6dc;border-radius:30px;padding:6px 12px;background:#f1f7f2}.container{max-width:1248px;padding:30px 24px 160px}.hero{position:relative;overflow:hidden;min-height:230px;background:#292c38;border-radius:22px;padding:30px 36px;color:white;margin-bottom:18px}.eyebrow{color:#ddb18d;font-size:10px;letter-spacing:2.2px;font-weight:650}.hero h2{font-size:34px;line-height:1.25;font-weight:600;color:#fff;border:0;letter-spacing:-1px;margin:15px 0 12px;padding:0}.hero em{font-family:Georgia,serif;color:#e5ba99;font-weight:400}.hero p{font-size:13px;color:#c0c3ce;margin:0}.sound-art{position:absolute;right:7%;top:35px;width:260px;height:150px;display:flex;align-items:center;justify-content:center;gap:10px;transform:rotate(-8deg)}.sound-art span{width:13px;border-radius:20px;background:linear-gradient(#edc1a1,#af6274);height:35%;box-shadow:0 8px 40px #d1816240}.sound-art span:nth-child(2n){height:65%}.sound-art span:nth-child(3n){height:90%}.sound-art span:nth-child(5){height:120%;background:#e9bf9e}.hero-tag{position:absolute;right:40px;bottom:24px;font-size:9px;letter-spacing:2px;color:#9798a5}.session-strip{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 20px;border:1px solid #e4e2dd;background:#fff;border-radius:12px;font-size:12px}.status-dot{display:inline-block;width:7px;height:7px;border-radius:100%;background:#60997d;margin-right:7px}#expiry-countdown{margin-left:auto;color:#7b6062;font-variant-numeric:tabular-nums}.text-button{background:transparent;color:#a9233e;border:0;font-size:12px;min-height:32px}.workspace-tabs{display:flex;gap:6px;margin:22px 0 18px;overflow:auto;padding-bottom:4px}.tab{white-space:nowrap;background:transparent;border:0;border-radius:9px;color:#72737d;font-size:13px;padding:10px 16px;font-weight:600}.tab.selected{background:#a9233e;color:#fff;box-shadow:0 5px 12px #a9233e20}.work-grid{display:grid;grid-template-columns:minmax(0,1fr) 265px;gap:22px;align-items:start}.panel-column{min-width:0}.card{border-radius:18px;padding:26px;border:1px solid #e6e4e0;box-shadow:0 3px 12px #34313403;margin:0}.section-kicker{font-size:9px;letter-spacing:1.8px;color:#a9233e;font-weight:750}.card>h2{font-size:22px;letter-spacing:-.5px;color:#292c38;border:0;margin:7px 0 4px;padding:0}.panel-description{font-size:13px;color:#8a8b93;margin:0 0 24px}.guide-card{padding:25px;background:#ebe8e1;border-radius:18px}.guide-card h3{font-size:20px;font-weight:550;line-height:1.45;margin:12px 0 24px;letter-spacing:-.5px}.guide-card ol{padding-left:20px;margin:0}.guide-card li{padding-left:8px;margin-bottom:20px;color:#a9233e}.guide-card li:last-child{margin-bottom:0}.guide-card b{display:block;color:#4c4c55;font-size:13px}.guide-card li span{display:block;color:#85818a;font-size:12px;margin-top:4px}.side-note{padding:23px 12px;font-size:12px;color:#8b8790}.side-note b{color:#57535c}.side-note p{margin:9px 0}.enhance-section,.library-section{border:0;margin:0;padding:0}.enhance-label,.library-title{font-size:15px;color:#363542}.enhance-buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn-enhance{background:#f4f1ed!important;color:#534350!important;border:1px solid #e6deda;border-radius:12px;box-shadow:none;padding:16px;min-height:82px}.btn-enhance:hover{background:#f8e9eb!important}.enhance-result-box{border-color:#e6d5d8;background:#fcf6f7;border-radius:13px}.enhance-result-header{flex-wrap:wrap;gap:12px}.btn-apply-enhance{min-height:42px;border-radius:7px}.accent-selector-container,.temp-slider-container{background:#f8f7f5;border-color:#ebe7e2}.accent-select{border-radius:9px}.library-item{padding:16px;background:#faf9f7;border-color:#ebe7e1;border-radius:12px}.library-item-name{overflow-wrap:anywhere}.library-item-preview{white-space:normal;max-height:70px;overflow:hidden}.library-item-actions{flex-wrap:wrap}.btn-lib-action{width:44px;height:44px}.schedule-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.day-group{background:#f8f7f5;border:1px solid #ece9e4;padding:14px;border-radius:12px;margin:0}.day-name{color:#62565c}.day-id{background:#ebe5e4;color:#987a80}.day-group input{background:white;font-size:16px}#microphone-button{border-radius:10px;background:#f4f1ed;min-height:48px}.microphone-container{align-items:center}#speech-status{font-size:12px}.btn-clear{font-size:12px;border-radius:8px;min-height:42px}.sticky-footer{display:grid;grid-template-columns:1fr minmax(220px,380px) minmax(180px,240px);align-items:center;gap:16px;padding:15px max(24px,calc((100vw - 1200px)/2));padding-bottom:max(15px,env(safe-area-inset-bottom));background:#fffffff0;backdrop-filter:blur(12px);box-shadow:0 -8px 30px #25253605}.btn-live-voice{margin:0;background:#a9233e;border-radius:11px;font-size:14px;box-shadow:0 4px 12px #a9233e20;min-height:50px}.btn-live-voice:hover{background:#891a32}.btn-save{background:#292c38;border-radius:11px;min-height:50px;font-size:13px}.btn-save:hover{background:#414657}#status{text-align:left;font-size:11px;overflow-wrap:anywhere}.setting-block{padding:20px 0;border-bottom:1px solid #eee;margin-bottom:20px}.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:20px}.toggle-row small{display:block;font-size:12px;font-weight:400;color:#929099}.helper{font-size:12px;color:#88838c}.secondary{background:#f1eeeb;border:1px solid #ded8d3;padding:10px 16px;border-radius:9px;color:#5c5057;font-size:13px}.key-row{display:flex;gap:8px;margin-bottom:14px}.check-label{display:flex;align-items:center;gap:10px;margin-top:15px;font-size:13px}.viewer-card{border-radius:20px;max-height:85dvh;overflow:auto}.viewer-header{background:#a9233e}.viewer-content{white-space:pre-wrap;overflow-wrap:anywhere}#readers-list{border-radius:12px!important}.note{font-size:12px;background:#f6f4f1;border-color:#e8e4de;color:#80747a}
+@media(min-width:1450px){.container{padding-top:40px}.hero{min-height:250px}}
+@media(max-width:900px){.work-grid{grid-template-columns:minmax(0,1fr)}.side-column{display:none}.sound-art{right:4%;width:180px;opacity:.6}.hero h2{font-size:30px}.sticky-footer{grid-template-columns:1fr 1fr;gap:7px 12px}#status{grid-column:1/-1;text-align:center}.container{padding-bottom:150px}}
+@media(max-width:560px){.app-header{padding:12px 16px}.brand{font-size:17px}.brand-mark{width:35px;height:37px}.header-pill{font-size:9px;padding:4px 8px}.container{padding:16px 12px 160px}.hero{border-radius:17px;padding:23px 20px;min-height:218px}.hero h2{font-size:28px}.hero p{font-size:12px;max-width:260px}.hero-tag{right:15px;bottom:13px;font-size:7px}.sound-art{width:100px;height:100px;right:-15px;top:40px;gap:5px;opacity:.2}.sound-art span{width:7px}.eyebrow{font-size:8px;letter-spacing:1.4px}.session-strip{gap:4px 10px;padding:10px 12px;font-size:11px}.text-button{font-size:11px}.workspace-tabs{margin:15px 0 12px}.tab{font-size:12px;padding:9px 13px}.card{padding:19px 15px;border-radius:15px}.card>h2{font-size:21px}.panel-description{font-size:12px;margin-bottom:20px}.sticky-footer{padding:8px 12px max(10px,env(safe-area-inset-bottom));gap:5px 8px}.btn-live-voice,.btn-save{font-size:12px;padding:10px 8px;min-height:48px}textarea{padding:14px;min-height:200px}.schedule-grid{grid-template-columns:1fr}.enhance-buttons{gap:8px}.btn-enhance{padding:12px 8px}.enhance-btn-text{font-size:12px}.library-header{flex-wrap:wrap;gap:10px}.library-item{flex-wrap:wrap;gap:10px}.library-item-info{max-width:100%}.viewer-card{width:94%;max-height:88dvh}.viewer-header h3{font-size:14px}.viewer-content{font-size:17px}.enhance-result-header>div{justify-content:flex-start!important}.temp-guides{font-size:10px}}
+@media(max-width:560px){.hero{min-height:0;padding:18px 20px}.hero h2{font-size:25px;margin:10px 0 0}.hero p,.hero-tag{display:none}.sound-art{top:15px}.workspace-tabs{scrollbar-width:thin}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+    </style>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#a9233e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LiveVoice">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="./icons/favicon.png">
+<style>.install-button{background:#f8edef;border:1px solid #e8cbd0;color:#a9233e;border-radius:10px;padding:8px 12px;font-size:12px}.pwa-dialog{max-width:440px;width:calc(100% - 32px);border:0;border-radius:18px;padding:24px;color:#292c38;box-shadow:0 20px 100px #0004}.pwa-dialog::backdrop{background:#1b203b80}.pwa-dialog h2{font-size:20px}.pwa-dialog li{margin:12px 0}.pwa-dialog p{font-size:13px;color:#736c76}.app-header{padding-top:max(12px,env(safe-area-inset-top))}</style>
+</head>
+<body>
+
+    <header class="app-header">
+        <a class="brand" href="#"><span class="brand-mark">i</span><span>IDECO <b>LiveVoice</b><small>TRUNG TÂM THÔNG BÁO</small></span></a><button id="install-pwa" class="install-button">Cài ứng dụng</button>
+    </header>
+
+<main class="container"><section class="hero"><div><span class="eyebrow">IDECO · COMMUNICATION WORKSPACE</span><h2>Một lời nói.<br><em>Kết nối cả đội ngũ.</em></h2><p>Soạn thông báo, trau chuốt bằng AI và phát trực tiếp<br class="desktop-break"> đến đúng người — trong cùng một không gian.</p></div><div class="sound-art" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="hero-tag">LIVE VOICE / STUDIO 02</div></section>
+<div class="session-strip"><span><i class="status-dot"></i> <b id="session-label">Sẵn sàng phát</b></span><span id="expiry-countdown" role="status">Tự xóa sau 10 phút</span><button id="delete-live-now" class="text-button">Xóa LIVE ngay</button></div>
+<nav class="workspace-tabs" aria-label="Các chức năng"><button data-panel="editor" class="tab selected" aria-pressed="true">01 · Soạn tin</button><button data-panel="ai" class="tab " aria-pressed="false">02 · Trợ lý AI</button><button data-panel="library" class="tab " aria-pressed="false">03 · Thư viện</button><button data-panel="schedule" class="tab " aria-pressed="false">04 · Lịch phát</button><button data-panel="readers" class="tab " aria-pressed="false">05 · Đã đọc</button><button data-panel="settings" class="tab " aria-pressed="false">06 · Cài đặt</button></nav><div class="work-grid"><div class="panel-column"><section id="panel-editor" class="card workspace-panel" ><div class="section-kicker">KHÔNG GIAN LÀM VIỆC</div><h2>Nội dung thông báo</h2><p class="panel-description">Nhập văn bản hoặc dùng micro để chuyển lời nói thành chữ.</p>            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 10px;">
+                <label for="message-input" style="margin: 0;">Nội dung Popup:</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label for="target-type" style="margin: 0; font-size: 0.8125rem; font-weight: normal;">Gửi đến:</label>
+                    <select id="target-type" style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--input-border); font-size: 0.8125rem; background: #fff;">
+                        <option value="all">Tất cả</option>
+                        <option value="specific">Người cụ thể...</option>
+                    </select>
+                    <input type="text" id="target-user" placeholder="Tên người nhận (vd: Triết)" style="display: none; padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--input-border); font-size: 0.8125rem; width: 150px;">
+                </div>
+            </div>
+
+            <!-- Banner LIVE hiển thị khi đang phát -->
+            <div id="live-banner" class="live-banner">
+                <div class="live-banner-dot"></div>
+                <span id="live-banner-text">ĐANG PHÁT LIVE — Đang gửi đến tất cả thiết bị</span>
+            </div>
+            
+            <div class="textarea-wrapper">
+                <textarea id="message-input" placeholder="Nhập lời nhắn..."></textarea>
+                <div id="resize-handle" class="resize-handle" title="Kéo để chỉnh kích thước"></div>
+            </div>
+            <div class="word-count" id="word-count">0 từ</div>
+
+            <!-- Micro thường -->
+            <div class="microphone-container">
+                <button id="microphone-button">🎤 Bắt đầu ghi âm</button>
+                <span id="speech-status">Sẵn sàng</span>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.75rem;">
+                <button id="clear-button" class="btn-clear" style="margin-top: 0;">🗑️ Xóa nội dung để viết lại</button>
+                <button id="delete-all-button" class="btn-clear" style="margin-top: 0; color: #b91c1c; background-color: #fef2f2; border-color: #fca5a5;">🚨 Xóa tất cả dữ liệu hệ thống</button>
+            </div>
+
+</section><section id="panel-ai" class="card workspace-panel" hidden><div class="section-kicker">KHÔNG GIAN LÀM VIỆC</div><h2>Viết hay hơn cùng AI</h2><p class="panel-description">Chọn phong cách phù hợp cho thông điệp của anh.</p>            <!-- NÂNG CAO VĂN BẢN -->
+            <div class="enhance-section">
+                <div class="enhance-label">✨ Nâng cao văn bản bằng AI</div>
+                
+                <!-- Vùng chọn phong cách vùng miền -->
+                <div class="accent-selector-container">
+                    <label class="accent-label">📍 Chọn phong cách vùng miền:</label>
+                    <select id="accent-select" class="accent-select">
+                        <option value="mặc định">Mặc định (Toàn dân)</option>
+                        <option value="miền Bắc">Giọng miền Bắc</option>
+                        <option value="miền Nam (Sài Gòn)">Giọng Sài Gòn</option>
+                        <option value="Huế">Giọng Huế</option>
+                        <option value="Nghệ An">Giọng Nghệ An</option>
+                        <option value="Quảng Ngãi">Giọng Quảng Ngãi</option>
+                    </select>
+                </div>
+
+                <!-- Temperature / Length Slider -->
+                <div class="temp-slider-container">
+                    <div class="temp-header">
+                        <label class="temp-label">📏 Độ dài & Sáng tạo của AI:</label>
+                        <span id="temp-value" class="temp-value-label">0.7</span>
+                    </div>
+                    <input type="range" id="temp-slider" class="temp-slider" min="0.1" max="1.0" step="0.1" value="0.7">
+                    <div class="temp-guides">
+                        <span>Ngắn, Xúc tích</span>
+                        <span>Cân bằng</span>
+                        <span>Dài, Sáng tạo</span>
+                    </div>
+                </div>
+
+                <div class="enhance-buttons">
+                    <button id="btn-enhance-leader" class="btn-enhance btn-enhance-leader">
+                        <span class="enhance-btn-icon">👔</span>
+                        <span class="enhance-btn-text">Hội thoại lãnh đạo</span>
+                    </button>
+                    <button id="btn-enhance-chat" class="btn-enhance btn-enhance-chat">
+                        <span class="enhance-btn-icon">💬</span>
+                        <span class="enhance-btn-text">Trò chuyện</span>
+                    </button>
+                    <button id="btn-enhance-huyen" class="btn-enhance btn-enhance-huyen">
+                        <span class="enhance-btn-icon">👩‍💼</span>
+                        <span class="enhance-btn-text">Huyền AI</span>
+                    </button>
+                    <button id="btn-enhance-fix" class="btn-enhance btn-enhance-fix" style="background: #ec4899; color: white;">
+                        <span class="enhance-btn-icon">🛠️</span>
+                        <span class="enhance-btn-text">Sửa lỗi</span>
+                    </button>
+                </div>
+                <div id="enhance-result-box" class="enhance-result-box" style="position: relative;">
+                    <div class="enhance-result-header">
+                        <span class="enhance-result-title">📝 Văn bản đã nâng cao</span>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end;">
+                            <button id="btn-edit-refined" class="btn-apply-enhance" style="background: #334155;" title="Chỉnh sửa văn bản này">✍️ Sửa tay</button>
+                            <button id="btn-apply-enhance" class="btn-apply-enhance" title="Áp dụng vào ô nhập liệu">✅ Áp dụng</button>
+                            <button id="btn-save-refined" class="btn-apply-enhance" style="background: #10b981;" title="Lưu vào thư viện">💾 Lưu</button>
+                            <button id="btn-schedule-refined" class="btn-apply-enhance" style="background: #f59e0b;" title="Hẹn giờ phát LIVE">⏰ Hẹn giờ</button>
+                            <button id="btn-live-refined" class="btn-apply-enhance" style="background: #ef4444;" title="Phát LIVE ngay bây giờ">🔴 Phát LIVE</button>
+                        </div>
+                    </div>
+                    <div id="enhance-result-text" class="enhance-result-text" contenteditable="false" style="outline: none; border: 1px solid transparent; border-radius: 4px; padding: 5px; transition: all 0.2s;"></div>
+                    <div class="enhance-note">Bạn có thể nhấn "Sửa tay" để điều chỉnh trực tiếp. AI xử lý tối đa 600 từ.</div>
+                </div>
+            </div>
+
+</section><section id="panel-library" class="card workspace-panel" hidden><div class="section-kicker">KHÔNG GIAN LÀM VIỆC</div><h2>Thư viện nội dung</h2><p class="panel-description">Các bản lưu trên trình duyệt này, sẵn sàng sử dụng lại.</p>            <!-- THƯ VIỆN NỘI DUNG -->
+            <div class="library-section">
+                <div class="library-header">
+                    <div class="library-title">📦 Thư viện nội dung đã lưu</div>
+                    <button id="btn-save-to-library" class="btn-save-library">➕ Lưu nội dung này</button>
+                </div>
+                <div id="library-list" class="library-list">
+                    <!-- Danh sách nội dung sẽ hiển thị ở đây -->
+                    <div class="note" style="margin-bottom: 0; text-align: center;">Chưa có nội dung nào được lưu.</div>
+                </div>
+            </div></section><section id="panel-schedule" class="card workspace-panel" hidden><div class="section-kicker">KHÔNG GIAN LÀM VIỆC</div><h2>Lên lịch thông báo</h2><p class="panel-description">Lưu lịch tuần vào Firebase để các ứng dụng nhận thông báo sử dụng.</p>            <h2>Lập Lịch (HH:mm)</h2>
+            <div class="note">
+                Dùng dấu phẩy phân cách.<br>
+                VD: <b>09:00, 14:30</b>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="day-group"><div class="day-label"><span class="day-name">Thứ Hai</span><span class="day-id">T2</span></div><input type="text" id="day-1" placeholder="Trống hoặc 09:00, 14:00"></div>
+                <div class="day-group"><div class="day-label"><span class="day-name">Thứ Ba</span><span class="day-id">T3</span></div><input type="text" id="day-2" placeholder="Trống hoặc 09:00, 14:00"></div>
+                <div class="day-group"><div class="day-label"><span class="day-name">Thứ Tư</span><span class="day-id">T4</span></div><input type="text" id="day-3" placeholder="Trống hoặc 09:00, 14:00"></div>
+                <div class="day-group"><div class="day-label"><span class="day-name">Thứ Năm</span><span class="day-id">T5</span></div><input type="text" id="day-4" placeholder="Trống hoặc 09:00, 14:00"></div>
+                <div class="day-group"><div class="day-label"><span class="day-name">Thứ Sáu</span><span class="day-id">T6</span></div><input type="text" id="day-5" placeholder="Trống hoặc 09:00, 14:00"></div>
+                <div class="day-group"><div class="day-label"><span class="day-name">Thứ Bảy</span><span class="day-id">T7</span></div><input type="text" id="day-6" placeholder="Trống hoặc 09:00, 14:00"></div>
+                <div class="day-group"><div class="day-label"><span class="day-name">Chủ Nhật</span><span class="day-id">CN</span></div><input type="text" id="day-0" placeholder="Trống hoặc 09:00, 14:00"></div>
+            </div>
+</section><section id="panel-readers" class="card workspace-panel" hidden><div class="section-kicker">KHÔNG GIAN LÀM VIỆC</div><h2>Theo dõi người đọc</h2><p class="panel-description">Danh sách xác nhận được đồng bộ từ Firebase.</p>            <!-- DANH SÁCH NGƯỜI ĐÃ ĐỌC -->
+            <div class="enhance-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <div class="enhance-label" style="margin-bottom: 0;">👁️ Danh sách người đã đọc</div>
+                    <button id="btn-clear-readers" class="btn-clear" style="margin-top: 0; padding: 0.25rem 0.5rem; font-size: 0.75rem; width: auto;">🗑️ Xóa danh sách</button>
+                </div>
+                <div id="readers-list" style="max-height: 200px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 0.75rem; font-size: 0.875rem;">
+                    <div class="note" style="margin-bottom: 0; text-align: center;">Chưa có người đọc.</div>
+                </div>
+            </div>
+
+</section><section id="panel-settings" class="card workspace-panel" hidden><div class="section-kicker">TÙY CHỈNH</div><h2>Cài đặt phát & AI</h2>
+<div class="setting-block"><label for="auto-delete-enabled" class="toggle-row"><span>Tự động xóa thông báo LIVE<small>Xóa bản phát trên Firebase khi hết hạn.</small></span><input type="checkbox" id="auto-delete-enabled" checked></label>
+<label for="auto-delete-minutes">Thời gian kể từ lúc bắt đầu phát (phút)</label><input id="auto-delete-minutes" type="number" min="1" max="1440" value="10"><p class="helper">Mặc định 10 phút. Áp dụng cho phiên phát tiếp theo, gồm mic LIVE, nội dung AI, thư viện và lịch phát.</p><button id="save-expiry" class="secondary">Lưu thời gian tự xóa</button><p id="expiry-settings-status" role="status"></p></div>
+<div class="note">Giữ trang mở và kết nối mạng để xóa đúng hạn trên Firebase. Khi mở lại, bản này kiểm tra hạn và ẩn LIVE hết hạn ngay. Các ứng dụng nhận LIVE phiên bản cũ cần được cập nhật để đọc hạn dùng. Bản soạn, lịch phát, thư viện và danh sách đã đọc được giữ lại.</div>
+<div class="setting-block"><h2>Kết nối Gemini AI</h2><label for="ai-key">API Key</label><div class="key-row"><input id="ai-key" type="password" autocomplete="off" placeholder="Nhập Gemini API Key"><button id="toggle-key" class="secondary" aria-label="Hiện hoặc ẩn API Key">Hiện</button></div><label for="ai-model">Model</label><input id="ai-model" type="text" value="gemini-2.5-flash"><label class="check-label"><input id="remember-key" type="checkbox"> Lưu khóa trên trình duyệt này</label><p class="helper">Chỉ bật trên thiết bị cá nhân. Khóa không được gửi vào Firebase; người dùng có quyền truy cập trình duyệt có thể xem khóa đã lưu.</p><button id="save-ai-settings" class="secondary">Lưu cài đặt AI</button><span id="ai-settings-status" role="status"></span></div></section></div><aside class="side-column"><div class="guide-card"><span class="section-kicker">QUY TRÌNH NHANH</span><h3>Thông điệp rõ ràng.<br>Đội ngũ đồng lòng.</h3><ol><li><b>Soạn nội dung</b><span>Gõ hoặc đọc lời nhắn bằng micro.</span></li><li><b>Chọn đúng người</b><span>Gửi toàn bộ hoặc chỉ định tên.</span></li><li><b>Phát và theo dõi</b><span>LIVE tức thì, xem ai đã đọc.</span></li></ol></div><div class="side-note"><b>Không gian của IDECO</b><p>Micro chuyển giọng nói thành chữ. LIVE gửi văn bản tới các thiết bị, như ứng dụng gốc.</p><p>Lịch từ thư viện chạy khi trang đang mở. Micro cần HTTPS và quyền truy cập.</p></div></aside></div></main>    <div class="sticky-footer">
+        <div id="status" class="loading">Đang kết nối...</div>
+        <button id="live-voice-button" class="btn-live-voice">🔴 LIVE VOICE — Phát ngay tức thì</button>
+        <button id="save-button" class="btn-save">LƯU CẤU HÌNH</button>
+    </div>
+
+    <!-- VIEWER OVERLAY POPUP -->
+    <div id="broadcast-viewer">
+        <div class="viewer-card">
+            <div class="viewer-header">
+                <div class="live-banner-dot" style="background: white;"></div>
+                <h3>THÔNG BÁO TRỰC TIẾP</h3>
+            </div>
+            <div class="viewer-content" id="viewer-text"></div>
+            <div class="viewer-footer" style="flex-direction: column; gap: 10px;">
+                <input type="text" id="reader-name" placeholder="Tên người đọc (vd: Nguyễn Minh Triết)" style="width: 100%; border: 1px solid #cbd5e1; padding: 0.75rem; border-radius: 0.5rem; text-align: center; box-sizing: border-box; font-size: 0.9375rem;">
+                <button id="btn-close-viewer" class="btn-read-done" style="width: 100%;">Đã đọc</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set as firebaseSet, push, runTransaction } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // --- NÚT XÓA ---
+        const clearButton = document.getElementById('clear-button');
+        clearButton.addEventListener('click', () => {
+            if (confirm("Bạn có chắc muốn xóa hết nội dung văn bản không?")) {
+                document.getElementById('message-input').value = "";
+                updateWordCount();
+                document.getElementById('message-input').focus();
+            }
+        });
+
+        const deleteAllButton = document.getElementById('delete-all-button');
+        deleteAllButton.addEventListener('click', async () => {
+            if (confirm("🚨 BẠN CHẮC CHẮN MUỐN XÓA TẤT CẢ DỮ LIỆU?\n\n- Toàn bộ nội dung, lịch hẹn, thông báo live sẽ bị xóa.\n- Danh sách người đã đọc cũng sẽ bị xóa.\n- Bạn phải lưu lại cấu hình mới sau đó.")) {
+                try {
+                    await Promise.all([
+                        set(ref(database, 'scheduleConfig'), null),
+                        set(ref(database, 'liveBroadcast'), null),
+                        set(ref(database, 'liveReaders'), null)
+                    ]);
+                    document.getElementById('message-input').value = "";
+                    updateWordCount();
+                    for (let i = 0; i <= 6; i++) {
+                        const d = document.getElementById('day-' + i);
+                        if(d) d.value = '';
+                    }
+                    alert("✅ Đã xóa tất cả dữ liệu hệ thống!");
+                } catch (err) {
+                    alert("Lỗi khi xóa dữ liệu: " + err.message);
+                }
+            }
+        });
+
+        // --- KÉO GIÃN TEXTAREA ---
+        const textarea = document.getElementById('message-input');
+        const resizeHandle = document.getElementById('resize-handle');
+        let isResizing = false;
+        let lastDownY = 0;
+
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true; lastDownY = e.clientY;
+            document.body.style.cursor = 'ns-resize'; e.preventDefault();
+        });
+        resizeHandle.addEventListener('touchstart', (e) => {
+            isResizing = true; lastDownY = e.touches[0].clientY; e.preventDefault();
+        }, { passive: false });
+
+        const handleMove = (clientY) => {
+            if (!isResizing) return;
+            const offset = clientY - lastDownY;
+            const newHeight = textarea.offsetHeight + offset;
+            if (newHeight > 60) {
+                textarea.style.height = newHeight + 'px';
+                lastDownY = clientY;
+            }
+        };
+        const handleUp = () => { isResizing = false; document.body.style.cursor = 'default'; };
+
+        document.addEventListener('mousemove', (e) => handleMove(e.clientY));
+        document.addEventListener('mouseup', handleUp);
+        document.addEventListener('touchmove', (e) => {
+            if(isResizing) handleMove(e.touches[0].clientY);
+        }, { passive: false });
+        document.addEventListener('touchend', handleUp);
+
+        // --- ĐẾM TỪ ---
+        function updateWordCount() {
+            const text = textarea.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            document.getElementById('word-count').textContent = words + ' từ';
+        }
+        textarea.addEventListener('input', updateWordCount);
+
+        // --- FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaEzd8OMJ553ETba-M_pxWSe2bDX9fh_I", 
+            authDomain: "ideco-f82d4.firebaseapp.com",
+            databaseURL: "https://ideco-f82d4-default-rtdb.firebaseio.com",
+            projectId: "ideco-f82d4",
+            storageBucket: "ideco-f82d4.appspot.com",
+            messagingSenderId: "614324382815",
+            appId: "1:614324382815:web:234ed4873b7156d80fffea"
+        };
+
+        const app = initializeApp(firebaseConfig, 'ThongBaoAdmin_LiveVoice'); 
+        const database = getDatabase(app);
+        const scheduleRef = ref(database, 'scheduleConfig');
+        const liveBroadcastRef = ref(database, 'liveBroadcast'); 
+        const liveReadersRef = ref(database, 'liveReaders');
+
+        const senderId = globalThis.crypto?.randomUUID?.() || 'sender-' + Date.now() + Math.random();
+        let serverOffset = 0, latestLive = null, micSession = null, suppressLiveWrite = false, deletionBusy = false;
+        let expirySettings = { enabled: true, minutes: 10 };
+        try { const saved = JSON.parse(localStorage.getItem('ideco_live_expiry') || 'null'); if (saved && Number.isFinite(saved.minutes) && saved.minutes >= 1 && saved.minutes <= 1440) expirySettings = saved; } catch(e) {}
+        function serverNow() { return Date.now() + serverOffset; }
+        function escapeHTML(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        onValue(ref(database, '.info/serverTimeOffset'), snap => { serverOffset = Number(snap.val()) || 0; });
+        function newLiveSession() {
+            const startedAt = serverNow();
+            return { sessionId: senderId + '-' + startedAt + '-' + Math.random().toString(36).slice(2), startedAt,
+                expiresAt: expirySettings.enabled ? startedAt + expirySettings.minutes * 60000 : null, senderId };
+        }
+        function set(destination, value) {
+            if (destination.toString() !== liveBroadcastRef.toString() || !value?.message) return firebaseSet(destination, value);
+            let session;
+            if (value.active && isLiveActive) session = micSession || (micSession = newLiveSession());
+            else if (value.active) session = newLiveSession();
+            else session = micSession || (latestLive?.sessionId ? { sessionId: latestLive.sessionId, startedAt: latestLive.startedAt, expiresAt: latestLive.expiresAt ?? null, senderId: latestLive.senderId || senderId } : newLiveSession());
+            if (session.expiresAt && serverNow() >= session.expiresAt) return Promise.resolve();
+            return firebaseSet(destination, {...value, ...session});
+        }
+        function stopMicSilently() {
+            suppressLiveWrite = true;
+            try { if (isLiveActive) stopLiveVoice(); } finally { suppressLiveWrite = false; }
+            if (livePushTimeout) { clearTimeout(livePushTimeout); livePushTimeout = null; }
+            micSession = null;
+        }
+        function reportLiveError(err) {
+            stopMicSilently();
+            statusDiv.textContent = 'Không gửi được LIVE: ' + err.message;
+            statusDiv.className = 'error';
+        }
+        async function deleteLive(expected, force = false) {
+            if (!expected || deletionBusy) return;
+            deletionBusy = true;
+            if (micSession?.sessionId === expected.sessionId) stopMicSilently();
+            try {
+                const result = await runTransaction(liveBroadcastRef, current => {
+                    if (!current) return;
+                    const same = expected.sessionId ? current.sessionId === expected.sessionId : current.timestamp === expected.timestamp;
+                    if (!same || (!force && (!current.expiresAt || current.expiresAt > serverNow()))) return;
+                    return null;
+                }, {applyLocally: false});
+                if (result.committed) {
+                    statusDiv.textContent = force ? 'Đã xóa thông báo LIVE.' : 'Đã tự động xóa LIVE hết hạn.';
+                    statusDiv.className = 'success';
+                }
+            } catch (err) {
+                statusDiv.textContent = 'Chưa xóa được LIVE; sẽ thử lại khi có mạng. ' + err.message;
+                statusDiv.className = 'error';
+            } finally { deletionBusy = false; }
+        }
+
+        const targetTypeSelect = document.getElementById('target-type');
+        const targetUserInput = document.getElementById('target-user');
+        
+        targetTypeSelect.addEventListener('change', () => {
+            targetUserInput.style.display = targetTypeSelect.value === 'specific' ? 'inline-block' : 'none';
+        });
+
+        const messageInput = document.getElementById('message-input');
+        const saveButton = document.getElementById('save-button');
+        const statusDiv = document.getElementById('status');
+        
+        const dayInputs = {
+            0: document.getElementById('day-0'),
+            1: document.getElementById('day-1'),
+            2: document.getElementById('day-2'),
+            3: document.getElementById('day-3'),
+            4: document.getElementById('day-4'),
+            5: document.getElementById('day-5'),
+            6: document.getElementById('day-6')
+        };
+
+        onValue(scheduleRef, (snapshot) => {
+            const config = snapshot.val();
+            if (config) {
+                messageInput.value = config.message || '';
+                if (config.target && config.target !== 'all') {
+                    targetTypeSelect.value = 'specific';
+                    targetUserInput.style.display = 'inline-block';
+                    targetUserInput.value = config.target;
+                } else {
+                    targetTypeSelect.value = 'all';
+                    targetUserInput.style.display = 'none';
+                    targetUserInput.value = '';
+                }
+                if (config.schedule) {
+                    for (let dayKey in dayInputs) {
+                        const timesArray = config.schedule[dayKey] || [];
+                        dayInputs[dayKey].value = timesArray.join(', ');
+                    }
+                }
+                updateWordCount();
+            }
+            statusDiv.textContent = 'Đã tải xong.';
+            statusDiv.className = 'success';
+        }, (error) => {
+            console.error("Lỗi tải Firebase:", error);
+            statusDiv.textContent = 'Lỗi kết nối!';
+            statusDiv.className = 'error';
+        });
+
+        // Lắng nghe người đọc
+        onValue(liveReadersRef, (snapshot) => {
+            const readersData = snapshot.val();
+            const readersListEl = document.getElementById('readers-list');
+            if (!readersData) {
+                readersListEl.innerHTML = '<div class="note" style="margin-bottom: 0; text-align: center;">Chưa có người đọc.</div>';
+                return;
+            }
+
+            const readers = Object.values(readersData).sort((a, b) => b.timestamp - a.timestamp);
+            readersListEl.innerHTML = readers.map((r, index) => {
+                const date = new Date(r.timestamp);
+                const timeStr = date.toLocaleTimeString('vi-VN') + ' ' + date.toLocaleDateString('vi-VN');
+                return `<div style="padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #4f46e5;">${index + 1}. ${escapeHTML(r.name || 'Người dùng ẩn danh')}</strong>
+                    <span style="color: #64748b; font-size: 0.75rem; margin-left: 5px;">(${timeStr})</span>
+                </div>`;
+            }).join('');
+        });
+
+        const btnClearReaders = document.getElementById('btn-clear-readers');
+        if (btnClearReaders) {
+            btnClearReaders.addEventListener('click', async () => {
+                if (confirm('Bạn có chắc muốn xóa danh sách người đã đọc?')) {
+                    try {
+                        await set(ref(database, 'liveReaders'), null);
+                        alert('✅ Đã xóa danh sách người đọc!');
+                    } catch (err) {
+                        alert('Lỗi khi xóa: ' + err.message);
+                    }
+                }
+            });
+        }
+
+        saveButton.addEventListener('click', () => {
+            for (const input of Object.values(dayInputs)) {
+                if (input.value.split(',').map(v => v.trim()).filter(Boolean).some(v => !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(v))) {
+                    alert('Lịch phát cần giờ hợp lệ HH:mm, ví dụ 09:00, 14:30.'); input.focus(); return;
+                }
+            }
+            saveButton.textContent = 'ĐANG LƯU...';
+            saveButton.disabled = true;
+            statusDiv.textContent = 'Đang xử lý dữ liệu...';
+            statusDiv.className = 'loading';
+
+            const promises = [];
+            const newConfig = { 
+                message: messageInput.value, 
+                schedule: {},
+                target: (targetTypeSelect.value === 'specific' && targetUserInput.value.trim()) ? targetUserInput.value.trim() : 'all'
+            };
+
+            // Nếu người dùng xóa hết nội dung văn bản và lưu
+            if (messageInput.value.trim() === '') {
+                for (let dayKey in dayInputs) {
+                    dayInputs[dayKey].value = ''; // Xóa luôn lịch trên UI
+                }
+                // Đồng thời xóa liveBroadcast để không còn tự động phát
+                promises.push(set(liveBroadcastRef, { message: '', timestamp: Date.now(), active: false }));
+            } else {
+                for (let dayKey in dayInputs) {
+                    const inputString = dayInputs[dayKey].value; 
+                    const timesArray = inputString.split(',').map(t => t.trim()).filter(t => t.length > 0);
+                    if (timesArray.length > 0) newConfig.schedule[dayKey] = timesArray;
+                }
+            }
+
+            promises.push(set(scheduleRef, newConfig));
+
+            Promise.all(promises)
+                .then(() => {
+                    statusDiv.textContent = 'Đã cập nhật thành công!';
+                    statusDiv.className = 'success';
+                    setTimeout(() => {
+                        saveButton.textContent = 'LƯU CẤU HÌNH';
+                        saveButton.disabled = false;
+                    }, 1000);
+                })
+                .catch((error) => {
+                    statusDiv.textContent = 'Lỗi: ' + error.message;
+                    statusDiv.className = 'error';
+                    saveButton.textContent = 'THỬ LẠI';
+                    saveButton.disabled = false;
+                });
+        });
+
+        updateWordCount();
+
+        // ========== MIC THƯỜNG ==========
+        const micButton = document.getElementById('microphone-button');
+        const speechStatus = document.getElementById('speech-status');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        let isLiveActive = false; // Dùng chung cho cả mic thường check
+
+        if (!SpeechRecognition) {
+            micButton.disabled = true;
+            micButton.style.opacity = 0.5;
+            speechStatus.textContent = 'Trình duyệt không hỗ trợ ghi âm.';
+            speechStatus.style.color = '#dc3545';
+        } else {
+            let recognition = null;
+            let isListening = false;
+            let finalText = '';
+            let restartTimeout = null;
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            function startListening() {
+                if (isListening || isLiveActive) return;
+                try {
+                    finalText = textarea.value;
+                    recognition = new SpeechRecognition();
+                    recognition.lang = 'vi-VN';
+                    recognition.continuous = !isMobile;
+                    recognition.interimResults = true;
+                    recognition.maxAlternatives = 1;
+
+                    recognition.onstart = () => {
+                        isListening = true;
+                        micButton.classList.add('listening');
+                        micButton.innerHTML = '⏹️ Dừng ghi âm';
+                        speechStatus.textContent = 'Đang nghe...';
+                        speechStatus.style.color = '#667eea';
+                    };
+
+                    recognition.onresult = (event) => {
+                        let interim = '', finalTr = '';
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            const t = event.results[i][0].transcript;
+                            if (event.results[i].isFinal) finalTr += t + ' ';
+                            else interim += t + ' ';
+                        }
+                        if (finalTr) {
+                            const trimmed = finalTr.trim();
+                            if (trimmed && !finalText.endsWith(trimmed)) {
+                                finalText = finalText + (finalText ? ' ' : '') + trimmed;
+                            }
+                        }
+                        textarea.value = finalText + (interim ? ' ' + interim.trim() : '');
+                        textarea.scrollTop = textarea.scrollHeight;
+                        updateWordCount();
+                    };
+
+                    recognition.onerror = (e) => { if (e.error !== 'no-speech') stopListening(); };
+
+                    recognition.onend = () => {
+                        if (isListening) {
+                            if (restartTimeout) clearTimeout(restartTimeout);
+                            restartTimeout = setTimeout(() => {
+                                if (isListening) {
+                                    try { recognition.start(); } catch(e) { stopListening(); }
+                                }
+                            }, 400);
+                        } else resetMicButton();
+                    };
+
+                    recognition.start();
+                } catch (err) { console.error(err); stopListening(); }
+            }
+
+            function stopListening() {
+                if (recognition && isListening) {
+                    isListening = false;
+                    try { recognition.stop(); } catch(e){}
+                }
+                if (restartTimeout) { clearTimeout(restartTimeout); restartTimeout = null; }
+                textarea.value = finalText;
+                resetMicButton();
+                updateWordCount();
+            }
+
+            function resetMicButton() {
+                isListening = false;
+                micButton.classList.remove('listening');
+                micButton.innerHTML = '🎤 Bắt đầu ghi âm';
+                speechStatus.textContent = 'Sẵn sàng';
+                speechStatus.style.color = '#666';
+            }
+
+            micButton.addEventListener('click', () => {
+                if (isLiveActive) { alert('Đang phát LIVE. Hãy dừng LIVE trước.'); return; }
+                if (isListening) stopListening(); else startListening();
+            });
+        }
+
+        // ========== LIVE VOICE — GHI ÂM + PUSH REAL-TIME LÊN FIREBASE ==========
+        const liveVoiceBtn = document.getElementById('live-voice-button');
+        const liveBanner   = document.getElementById('live-banner');
+        const liveBannerTx = document.getElementById('live-banner-text');
+
+        let liveRecognition = null;
+        let liveFinalText = '';
+        let liveRestartTimeout = null;
+        let livePushTimeout = null;
+
+        // Hàm lấy target
+        function getTargetData() {
+            if (targetTypeSelect.value === 'specific' && targetUserInput.value.trim()) {
+                return targetUserInput.value.trim();
+            }
+            return 'all';
+        }
+
+        // Debounce push lên Firebase (tránh gọi quá nhiều)
+        function pushLiveToFirebase(msgText, active) {
+            if (livePushTimeout) clearTimeout(livePushTimeout);
+            livePushTimeout = setTimeout(() => {
+                set(liveBroadcastRef, {
+                    message: msgText,
+                    timestamp: Date.now(),
+                    active: active,
+                    target: getTargetData()
+                }).catch(reportLiveError);
+            }, 250);
+        }
+
+        // Push ngay lập tức (khi start/stop)
+        function pushLiveImmediate(msgText, active) {
+            if (livePushTimeout) { clearTimeout(livePushTimeout); livePushTimeout = null; }
+            return set(liveBroadcastRef, {
+                message: msgText,
+                timestamp: Date.now(),
+                active: active,
+                target: getTargetData()
+            });
+        }
+
+        function startLiveVoice() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { alert('Trình duyệt không hỗ trợ ghi âm.'); return; }
+
+            // Giữ nội dung có sẵn, phần ghi âm sẽ nối thêm
+            liveFinalText = textarea.value;
+            const startingText = liveFinalText;
+
+            // UI
+            isLiveActive = true;
+            liveVoiceBtn.classList.add('broadcasting');
+            liveVoiceBtn.textContent = '⏹ DỪNG LIVE';
+            liveBanner.classList.add('active');
+            liveBannerTx.textContent = '🔴 ĐANG PHÁT LIVE — Đang gửi đến tất cả thiết bị';
+            textarea.classList.add('live-mode');
+            statusDiv.textContent = '🔴 LIVE đang phát';
+            statusDiv.className = 'error';
+
+            // Kích hoạt popup trên thiết bị viewer NGAY LẬP TỨC
+            micSession = null;
+            pushLiveImmediate(startingText || '(Đang chờ nội dung...)', true).catch(reportLiveError);
+
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            liveRecognition = new SR();
+            liveRecognition.lang = 'vi-VN';
+            liveRecognition.continuous = !isMobile;
+            liveRecognition.interimResults = true;
+            liveRecognition.maxAlternatives = 1;
+
+            liveRecognition.onresult = (event) => {
+                let interim = '', finalTr = '';
+                let newFinalAdded = false;
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const t = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) finalTr += t + ' ';
+                    else interim += t + ' ';
+                }
+                if (finalTr) {
+                    const trimmed = finalTr.trim();
+                    if (trimmed && !liveFinalText.endsWith(trimmed)) {
+                        liveFinalText = liveFinalText + (liveFinalText ? ' ' : '') + trimmed;
+                        newFinalAdded = true;
+                    }
+                }
+                // Admin vẫn xem text + interim (real-time feedback)
+                const displayText = liveFinalText + (interim ? ' ' + interim.trim() : '');
+                textarea.value = displayText;
+                textarea.scrollTop = textarea.scrollHeight;
+                updateWordCount();
+
+                // Chỉ push text FINAL lên Firebase (không push interim)
+                // → popup bên viewer chỉ nhận text "cộng thêm" → typing animation mượt
+                if (newFinalAdded) {
+                    pushLiveToFirebase(liveFinalText, true);
+                }
+            };
+
+            liveRecognition.onerror = (e) => {
+                console.error('Live err:', e.error);
+                if (e.error !== 'no-speech') stopLiveVoice();
+            };
+
+            liveRecognition.onend = () => {
+                if (isLiveActive) {
+                    if (liveRestartTimeout) clearTimeout(liveRestartTimeout);
+                    liveRestartTimeout = setTimeout(() => {
+                        if (isLiveActive) {
+                            try { liveRecognition.start(); } catch(e) { stopLiveVoice(); }
+                        }
+                    }, 400);
+                }
+            };
+
+            try { liveRecognition.start(); } catch(e) { console.error(e); stopLiveVoice(); }
+        }
+
+        function stopLiveVoice() {
+            if (!isLiveActive) return;
+            isLiveActive = false;
+            if (liveRestartTimeout) { clearTimeout(liveRestartTimeout); liveRestartTimeout = null; }
+            if (livePushTimeout) { clearTimeout(livePushTimeout); livePushTimeout = null; }
+            if (liveRecognition) { try { liveRecognition.stop(); } catch(e){} }
+
+            // Reset UI
+            liveVoiceBtn.classList.remove('broadcasting');
+            liveVoiceBtn.innerHTML = '🔴 LIVE VOICE — Phát ngay tức thì';
+            liveBanner.classList.remove('active');
+            textarea.classList.remove('live-mode');
+            textarea.value = liveFinalText;
+            updateWordCount();
+            statusDiv.textContent = '✅ Đã kết thúc LIVE';
+            statusDiv.className = 'success';
+
+            // Push văn bản cuối cùng + active=false → viewer popup auto-đóng sau vài giây
+            if (!suppressLiveWrite) pushLiveImmediate(liveFinalText || '(Kết thúc)', false).catch(reportLiveError);
+        }
+
+        liveVoiceBtn.addEventListener('click', () => {
+            if (isLiveActive) stopLiveVoice();
+            else startLiveVoice();
+        });
+
+        // ========== NÂNG CAO VĂN BẢN (Gemini API / Claude AI) ==========
+        const btnEnhanceLeader = document.getElementById('btn-enhance-leader');
+        const btnEnhanceChat = document.getElementById('btn-enhance-chat');
+        const btnEnhanceHuyen = document.getElementById('btn-enhance-huyen');
+        const btnEnhanceFix = document.getElementById('btn-enhance-fix');
+        const accentSelect = document.getElementById('accent-select');
+        
+        // Load accent from localStorage
+        const savedAccent = localStorage.getItem('ideco_selected_accent');
+        if (savedAccent && Array.from(accentSelect.options).some(opt => opt.value === savedAccent)) {
+            accentSelect.value = savedAccent;
+        }
+
+        accentSelect.addEventListener('change', () => {
+            localStorage.setItem('ideco_selected_accent', accentSelect.value);
+        });
+
+        const enhanceResultBox= document.getElementById('enhance-result-box');
+        const enhanceResultEl = document.getElementById('enhance-result-text');
+        const btnApplyEnhance = document.getElementById('btn-apply-enhance');
+        const btnSaveRefined = document.getElementById('btn-save-refined');
+        const btnScheduleRefined = document.getElementById('btn-schedule-refined');
+        const btnLiveRefined = document.getElementById('btn-live-refined');
+        const btnEditRefined = document.getElementById('btn-edit-refined');
+
+        const tempSlider = document.getElementById('temp-slider');
+        const tempValueDisplay = document.getElementById('temp-value');
+
+        tempSlider.addEventListener('input', () => {
+            tempValueDisplay.textContent = tempSlider.value;
+        });
+
+        // Chế độ sửa tay cho kết quả AI
+        let isEditingResult = false;
+        btnEditRefined.addEventListener('click', () => {
+            isEditingResult = !isEditingResult;
+            if (isEditingResult) {
+                enhanceResultEl.contentEditable = "true";
+                enhanceResultEl.style.border = "1px solid #3b82f6";
+                enhanceResultEl.style.background = "#ffffff";
+                btnEditRefined.innerHTML = "💾 Xong";
+                enhanceResultEl.focus();
+            } else {
+                enhanceResultEl.contentEditable = "false";
+                enhanceResultEl.style.border = "1px solid transparent";
+                enhanceResultEl.style.background = "transparent";
+                btnEditRefined.innerHTML = "✍️ Sửa tay";
+                enhancedTextResult = enhanceResultEl.innerText;
+            }
+        });
+
+        let enhancedTextResult = '';
+
+        const fetchWithRetry = async (url, options, retries = 2) => {
+            for (let i = 0; i < retries; i++) {
+                const res = await fetch(url, options);
+                if (res.ok) return res;
+                if (res.status === 429 || res.status === 503) {
+                    if (i < retries - 1) {
+                        await new Promise(r => setTimeout(r, 2000));
+                        continue;
+                    }
+                }
+                return res;
+            }
+        };
+
+        async function processAI(promptConfig, btnElement) {
+            const raw = textarea.value.trim();
+            if (!raw) { alert('Vui lòng nhập văn bản trước khi nâng cao.'); return; }
+            if (isLiveActive) { alert('Vui lòng dừng LIVE trước khi nâng cao văn bản.'); return; }
+
+            // Reset chế độ sửa tay
+            isEditingResult = false;
+            if (enhanceResultEl) {
+                enhanceResultEl.contentEditable = "false";
+                enhanceResultEl.style.border = "1px solid transparent";
+                enhanceResultEl.style.background = "transparent";
+            }
+            if (btnEditRefined) btnEditRefined.innerHTML = "✍️ Sửa tay";
+
+            // Lấy phong cách vùng miền
+            const accent = accentSelect.value;
+            let accentInstruction = "";
+            if (accent !== "mặc định") {
+                accentInstruction = ` Đặc biệt, hãy sử dụng từ ngữ và phong cách diễn đạt đặc trưng của ${accent}.`;
+            } else {
+                accentInstruction = ` Hãy sử dụng tiếng Việt phổ thông chuẩn (giọng toàn dân), không mang âm hưởng địa phương hay từ ngữ địa phương đặc thù.`;
+            }
+
+            // Length and creativity based on temp slider
+            const creativityValue = parseFloat(tempSlider.value);
+            let lengthInstruction = "";
+            if (creativityValue <= 0.3) {
+                lengthInstruction = " Hãy viết thật ngắn gọn, xúc tích, cô đọng ý chính.";
+            } else if (creativityValue >= 0.8) {
+                lengthInstruction = " Hãy viết một cách chi tiết, sáng tạo, bay bổng và đầy đủ thông tin.";
+            } else {
+                lengthInstruction = " Hãy viết với độ dài vừa phải, cân bằng giữa sự súc tích và chi tiết.";
+            }
+            lengthInstruction += " Lưu ý: Nội dung không được vượt quá 600 từ.";
+
+            const oldIcon = btnElement.querySelector('.enhance-btn-icon').innerHTML;
+            const oldText = btnElement.querySelector('.enhance-btn-text').textContent;
+            
+            // Disable all buttons
+            btnEnhanceLeader.disabled = true;
+            btnEnhanceChat.disabled = true;
+            btnEnhanceHuyen.disabled = true;
+            btnEnhanceFix.disabled = true;
+            
+            btnElement.querySelector('.enhance-btn-icon').innerHTML = '<span class="enhance-spinner"></span>';
+            btnElement.querySelector('.enhance-btn-text').textContent = 'Đang xử lý...';
+            enhanceResultBox.classList.remove('visible');
+
+            try {
+                // Sử dụng Gemini API của Google
+                const apiKey = document.getElementById('ai-key').value.trim();
+                if (!apiKey) {
+                   throw new Error("Không tìm thấy API Key của Gemini.");
+                }
+
+                const fullPrompt = `${promptConfig}${accentInstruction}${lengthInstruction}\n\nVăn bản gốc:\n${raw}`;
+
+                const modelsToTry = [document.getElementById('ai-model').value.trim() || 'gemini-2.5-flash'];
+                let response = null;
+                
+                for (const model of modelsToTry) {
+                    response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=` + apiKey, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{ text: fullPrompt }]
+                            }],
+                            generationConfig: {
+                                temperature: creativityValue
+                            }
+                        })
+                    });
+                    if (response.ok || response.status !== 404) {
+                        break;
+                    }
+                }
+
+                if (!response.ok) {
+                    let errorMsg = 'Lỗi không xác định (' + response.status + ')';
+                    try {
+                        const errorData = await response.json();
+                        if (response.status === 429) {
+                            errorMsg = 'Hệ thống đang nhận quá nhiều yêu cầu. Bạn vui lòng đợi khoảng 10 giây rồi nhấn "Nâng cao" lại nhé!';
+                        } else if (response.status === 503) {
+                            errorMsg = 'Máy chủ AI đang tạm thời quá tải. Vui lòng thử lại sau giây lát.';
+                        } else {
+                            errorMsg = errorData.error?.message || response.statusText;
+                        }
+                    } catch (e) {
+                         errorMsg = response.statusText;
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                enhancedTextResult = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+
+                if (enhancedTextResult) {
+
+                    enhanceResultEl.textContent = enhancedTextResult;
+                    enhanceResultBox.classList.add('visible');
+                } else {
+                    alert('Không thể xử lý văn bản. Vui lòng thử lại.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Lỗi kết nối AI: " + err.message);
+            } finally {
+                btnEnhanceLeader.disabled = false;
+                btnEnhanceChat.disabled = false;
+                btnEnhanceHuyen.disabled = false;
+                btnEnhanceFix.disabled = false;
+                
+                btnElement.querySelector('.enhance-btn-icon').innerHTML = oldIcon;
+                btnElement.querySelector('.enhance-btn-text').textContent = oldText;
+            }
+        }
+
+        btnEnhanceLeader.addEventListener('click', () => {
+            processAI('Bạn là một giám đốc chuyên nghiệp. Hãy sửa lỗi văn bản, chính tả và viết lại đoạn văn bản sau theo phong cách hướng dẫn, chỉ đạo công việc của giám đốc cho nhân viên. Rõ ràng, dứt khoát, chuyên nghiệp và lịch sự. Chỉ trả về nội dung văn bản đã sửa, không giải thích gì thêm.', btnEnhanceLeader);
+        });
+
+        btnEnhanceChat.addEventListener('click', () => {
+            processAI('Hãy sửa lỗi văn bản, chính tả và viết lại đoạn văn bản sau theo phong cách vui vẻ tự nhiên, gần gũi và dí dỏm như một người bạn đang trò chuyện. Nếu trong nội dung có nhắc đến lỗi sai, sai sót, vi phạm quy định, làm không đúng hoặc không khai báo đúng, hãy lồng ghép thêm lời khuyên từ "Huyền - trợ lý AI" rằng những sai sót này không chỉ ảnh hưởng đến cá nhân mà còn tác động đến lợi ích chung, công việc chung của công ty và đồng đội, giúp người nghe hiểu thấu đáo để làm tốt hơn. Chỉ trả về nội dung văn bản hoàn chỉnh đã được nâng cao, không giải thích gì thêm.', btnEnhanceChat);
+        });
+
+        btnEnhanceHuyen.addEventListener('click', () => {
+            processAI('Hãy đóng vai là "Huyền - trợ lý AI của giám đốc" với cá tính cực kỳ vui vẻ, dí dỏm, chân thành và luôn tràn đầy năng lượng tích cực. Hãy sửa lỗi văn bản và viết lại đoạn sau sao cho thật truyền cảm hứng, động viên mọi người làm việc hăng say. Cách xưng hô: xưng "Huyền", gọi "các bạn". Ngôn ngữ gần gũi, sử dụng các từ ngữ mang tính khích lệ, ủng hộ tinh thần đồng đội và sự phát triển chung. Nếu có nhắc đến sai sót, hãy nhắc nhở một cách nhẹ nhàng, khéo léo để các bạn cùng cố gắng tốt hơn. Lưu ý: Chỉ trả về nội dung văn bản sau khi đã nâng cao, không kèm lời giải thích.', btnEnhanceHuyen);
+        });
+
+        btnEnhanceFix.addEventListener('click', () => {
+            processAI('Hãy rà soát và sửa lỗi chính tả, dấu câu, ngữ pháp cho văn bản sau. Chỉ tập trung vào việc làm văn bản chuẩn xác và mượt mà hơn, giữ nguyên ý nghĩa và phong cách gốc. Chỉ trả về nội dung văn bản đã sửa, không giải thích gì thêm.', btnEnhanceFix);
+        });
+
+        btnApplyEnhance.addEventListener('click', () => {
+            if (!enhancedTextResult) return;
+            textarea.value = enhancedTextResult;
+            updateWordCount();
+            enhanceResultBox.classList.remove('visible');
+            enhancedTextResult = '';
+            document.querySelector('[data-panel=editor]').click();
+            textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        btnSaveRefined.addEventListener('click', () => {
+            if (!enhancedTextResult) return;
+            
+            const name = prompt('Nhập tên cho bản nâng cao này:', 'AI - ' + new Date().toLocaleDateString('vi-VN'));
+            if (name === null) return;
+            const finalName = name.trim() || 'AI Refined';
+
+            try {
+                const lib = loadLibrary();
+                lib.unshift({ name: finalName, text: enhancedTextResult, createdAt: Date.now(), target: getTargetData() });
+                saveLibrary(lib);
+                alert('Đã lưu bản nâng cao vào thư viện!');
+            } catch (err) {
+                alert('Lỗi khi lưu: ' + err.message);
+            }
+        });
+
+        btnLiveRefined.addEventListener('click', async () => {
+            if (!enhancedTextResult) return;
+            if (!confirm('Bạn có chắc muốn phát LIVE nội dung AI này ngay bây giờ?')) return;
+            
+            try {
+                await set(liveBroadcastRef, {
+                    message: enhancedTextResult,
+                    timestamp: Date.now(),
+                    active: true,
+                    target: getTargetData()
+                });
+                alert('🚀 Đã phát LIVE thành công!');
+                enhanceResultBox.classList.remove('visible');
+            } catch (err) {
+                alert('Lỗi khi phát LIVE: ' + err.message);
+            }
+        });
+
+        btnScheduleRefined.addEventListener('click', () => {
+            if (!enhancedTextResult) return;
+            
+            const time = prompt('Nhập thời gian muốn phát (định dạng HH:mm):', '09:00');
+            if (time === null) return;
+            
+            if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time)) {
+                alert('Sai định dạng thời gian. Vui lòng nhập HH:mm (ví dụ 14:30).');
+                return;
+            }
+
+            const name = prompt('Nhập tên gợi nhớ:', 'Hẹn giờ - ' + time);
+            if (name === null) return;
+            
+            try {
+                const lib = loadLibrary();
+                lib.unshift({ 
+                    name: name.trim() || 'Hẹn giờ', 
+                    text: enhancedTextResult, 
+                    createdAt: Date.now(),
+                    target: getTargetData(),
+                    scheduledAt: time
+                });
+                saveLibrary(lib);
+                alert(`✅ Đã hẹn giờ phát lúc ${time} thành công! (Dữ liệu đã được lưu vào thư viện)`);
+                enhanceResultBox.classList.remove('visible');
+            } catch (err) {
+                alert('Lỗi: ' + err.message);
+            }
+        });
+
+        // Cleanup khi đóng tab
+        window.addEventListener('beforeunload', () => {
+            if (isLiveActive) {
+                isLiveActive = false;
+                try { if (liveRecognition) liveRecognition.stop(); } catch(e){}
+                // Best-effort gửi tín hiệu kết thúc
+                try {
+                    set(liveBroadcastRef, {
+                        message: liveFinalText || '(Kết thúc)',
+                        timestamp: Date.now(),
+                        active: false
+                    });
+                } catch(e){}
+            }
+        });
+
+        // ========== VIEWER LOGIC (POPUP) ==========
+        const broadcastViewer = document.getElementById('broadcast-viewer');
+        const viewerTextEl = document.getElementById('viewer-text');
+        const btnCloseViewer = document.getElementById('btn-close-viewer');
+        
+        let fullTargetText = '';
+        let displayedText = '';
+        let typingInterval = null;
+        const TYPING_SPEED = 120; // Tốc độ chạy chữ (ms per char) - đã giảm chậm theo yêu cầu
+        const readerNameInput = document.getElementById('reader-name');
+
+        function startTypingEffect() {
+            if (typingInterval) return;
+            
+            typingInterval = setInterval(() => {
+                if (displayedText.length < fullTargetText.length) {
+                    displayedText = fullTargetText.substring(0, displayedText.length + 1);
+                    viewerTextEl.textContent = displayedText;
+                } else {
+                    viewerTextEl.textContent = displayedText; // Remove cursor when done
+                    clearInterval(typingInterval);
+                    typingInterval = null;
+                }
+            }, TYPING_SPEED);
+        }
+
+        let currentBroadcastTimestamp = 0;
+
+        onValue(liveBroadcastRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data || !data.message || (data.expiresAt && data.expiresAt <= serverNow())) {
+                // Đã bị xoá trên hệ thống (do Xóa cấu hình)
+                broadcastViewer.style.display = 'none';
+                broadcastViewer.classList.remove('active');
+                if (typingInterval) {
+                    clearInterval(typingInterval);
+                    typingInterval = null;
+                }
+                return;
+            }
+
+            if (data.senderId === senderId) return;
+            const lastAckTime = parseInt(localStorage.getItem('ideco_last_ack_time') || '0');
+            const savedViewerName = localStorage.getItem('ideco_viewer_name') || '';
+            const target = data.target || 'all';
+            const broadcastTime = data.timestamp || 0;
+            currentBroadcastTimestamp = broadcastTime;
+
+            // Xử lý target: lọc tên
+            if (target !== 'all' && savedViewerName) {
+                if (target.toLowerCase().trim() !== savedViewerName.toLowerCase().trim()) {
+                    // Không dành cho người này, tự động ack để không hiện lại
+                    if (broadcastTime > lastAckTime) {
+                        localStorage.setItem('ideco_last_ack_time', broadcastTime.toString());
+                    }
+                    if (broadcastViewer.style.display === 'flex') {
+                         broadcastViewer.style.display = 'none';
+                         broadcastViewer.classList.remove('active');
+                         if (typingInterval) { clearInterval(typingInterval); typingInterval = null; }
+                    }
+                    return;
+                }
+            }
+
+            let messageToDisplay = data.message || '';
+            if (target !== 'all') {
+                 messageToDisplay = `${target.toUpperCase()} CẦN XEM NỘI DUNG NÀY NHÉ !\n\n${messageToDisplay}`;
+            }
+
+            if (broadcastTime > lastAckTime && data.message) {
+                // Người dùng chưa đọc (hoặc có tin mới hơn), và tin này là có thật
+                fullTargetText = messageToDisplay;
+                
+                if (broadcastViewer.style.display !== 'flex') {
+                    if (savedViewerName && !readerNameInput.value) {
+                        readerNameInput.value = savedViewerName;
+                    }
+                    broadcastViewer.style.display = 'flex';
+                    broadcastViewer.classList.add('active');
+                    displayedText = '';
+                    viewerTextEl.innerHTML = '';
+                    startTypingEffect();
+                } else {
+                    if (!typingInterval) {
+                        startTypingEffect();
+                    }
+                }
+            } else if (broadcastTime === lastAckTime && data.message) {
+                // Đã đọc nhưng đang mở popup thì vẫn update nếu active còn mở và có tin mới
+                if (broadcastViewer.style.display === 'flex') {
+                     fullTargetText = messageToDisplay;
+                     if (!typingInterval) startTypingEffect();
+                }
+            } else if (!data.message) {
+                // Fallback catch-all nếu tin nhắn bị xoá
+                 localStorage.setItem('ideco_last_ack_time', Date.now().toString());
+                 broadcastViewer.style.display = 'none';
+                 broadcastViewer.classList.remove('active');
+            }
+        });
+
+        btnCloseViewer.addEventListener('click', async () => {
+            const name = readerNameInput.value.trim();
+            if (!name) {
+                alert("Bạn vui lòng điền tên người đọc để xác nhận!");
+                readerNameInput.focus();
+                return;
+            }
+            
+            // Lưu tên hiển thị lại vào localStorage
+            localStorage.setItem('ideco_viewer_name', name);
+
+            try {
+                await push(liveReadersRef, {
+                    name: name,
+                    timestamp: Date.now()
+                });
+            } catch(err) {
+                console.error("Lỗi lưu người đọc: ", err);
+            }
+
+            // Lưu lại thông tin báo là đã đọc bài viết hiện tại
+            if (currentBroadcastTimestamp > 0) {
+                localStorage.setItem('ideco_last_ack_time', currentBroadcastTimestamp.toString());
+            } else {
+                localStorage.setItem('ideco_last_ack_time', Date.now().toString());
+            }
+
+            broadcastViewer.style.display = 'none';
+            broadcastViewer.classList.remove('active');
+            displayedText = '';
+            fullTargetText = '';
+            if (typingInterval) {
+                clearInterval(typingInterval);
+                typingInterval = null;
+            }
+        });
+
+        // ========== QUẢN LÝ THƯ VIỆN NỘI DUNG ==========
+        const libraryListEl = document.getElementById('library-list');
+        const btnSaveToLibrary = document.getElementById('btn-save-to-library');
+
+        function loadLibrary() {
+            try {
+                return JSON.parse(localStorage.getItem('ideco_library') || '[]');
+            } catch (e) {
+                console.error('Error loading library:', e);
+                return [];
+            }
+        }
+
+        function saveLibrary(lib) {
+            try {
+                localStorage.setItem('ideco_library', JSON.stringify(lib));
+                renderLibrary();
+            } catch (e) {
+                console.error('Error saving library:', e);
+                alert('Lỗi: Thư viện đã lưu trữ đủ nhiều. Không lưu thêm được nữa.');
+            }
+        }
+
+        function renderLibrary() {
+            const lib = loadLibrary();
+            if (!libraryListEl) return;
+            
+            if (lib.length === 0) {
+                libraryListEl.innerHTML = '<div class="note" style="margin-bottom: 0; text-align: center;">Chưa có nội dung nào được lưu.</div>';
+                return;
+            }
+
+            libraryListEl.innerHTML = lib.map((item, index) => `
+                <div class="library-item">
+                    <div class="library-item-info">
+                        <div class="library-item-name">
+                            ${escapeHTML(item.name || 'Nội dung không tên')}
+                            ${item.scheduledAt ? `<span style="font-size: 0.7rem; background: #fef3c7; color: #92400e; padding: 1px 4px; border-radius: 4px; margin-left: 5px;">⏰ ${escapeHTML(item.scheduledAt)}</span>` : ''}
+                        </div>
+                        <div class="library-item-preview">${escapeHTML(item.text)}</div>
+                    </div>
+                    <div class="library-item-actions">
+                        <button class="btn-lib-action btn-lib-schedule" onclick="window.scheduleFromLibrary(${index})" title="Đổi hẹn giờ">⏰</button>
+                        <button class="btn-lib-action btn-lib-play" onclick="window.broadcastFromLibrary(${index})" title="Phát lại LIVE">📡</button>
+                        <button class="btn-lib-action btn-lib-delete" onclick="window.deleteFromLibrary(${index})" title="Xoá">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        btnSaveToLibrary.addEventListener('click', () => {
+            let text = textarea.value.trim();
+            let isAISuggestion = false;
+
+            if (enhanceResultBox.classList.contains('visible') && enhanceResultEl.textContent.trim()) {
+                if (confirm('Bạn muốn lưu "Văn bản AI" đang hiển thị? (Nếu chọn Cancel, tôi sẽ lưu văn bản gốc bạn đang viết)')) {
+                    text = enhanceResultEl.textContent.trim();
+                    isAISuggestion = true;
+                }
+            }
+
+            if (!text) {
+                alert('Vui lòng nhập nội dung muốn lưu vào ô văn bản.');
+                return;
+            }
+
+            const defaultName = isAISuggestion ? 'AI - ' : 'Draft - ';
+            const nameInput = prompt('Nhập tên gợi nhớ (ví dụ: Thông báo 1, Khuyến mãi...):', defaultName + new Date().toLocaleDateString('vi-VN'));
+            
+            if (nameInput === null) return; 
+            const finalName = nameInput.trim() || 'Nội dung không tên';
+
+            try {
+                const lib = loadLibrary();
+                lib.unshift({ name: finalName, text, createdAt: Date.now(), target: getTargetData() });
+                saveLibrary(lib);
+                alert('✅ Đã lưu vào thư viện thành công!');
+            } catch (err) {
+                console.error(err);
+                alert('❌ Lỗi khi lưu: ' + err.message);
+            }
+        });
+
+        window.deleteFromLibrary = (index) => {
+            if (!confirm('Bạn có chắc muốn xoá nội dung này khỏi thư viện?')) return;
+            const lib = loadLibrary();
+            lib.splice(index, 1);
+            saveLibrary(lib);
+        };
+
+        window.broadcastFromLibrary = async (index) => {
+            const lib = loadLibrary();
+            const item = lib[index];
+            
+            if (!confirm(`Bắt đầu phát nội dung "${item.name}"?`)) return;
+
+            textarea.value = item.text;
+            updateWordCount();
+            
+            if (item.target && item.target !== 'all') {
+                targetTypeSelect.value = 'specific';
+                targetUserInput.style.display = 'inline-block';
+                targetUserInput.value = item.target;
+            } else {
+                targetTypeSelect.value = 'all';
+                targetUserInput.style.display = 'none';
+                targetUserInput.value = '';
+            }
+
+            try {
+                await set(liveBroadcastRef, {
+                    message: item.text,
+                    timestamp: Date.now(),
+                    active: true,
+                    target: item.target || 'all' 
+                });
+                statusDiv.textContent = '📡 Đã phát lại nội dung từ thư viện';
+                statusDiv.className = 'success';
+                setTimeout(() => {
+                    statusDiv.textContent = 'Sẵn sàng';
+                    statusDiv.className = '';
+                }, 2000);
+            } catch (err) {
+                alert('Lỗi khi phát: ' + err.message);
+            }
+        };
+
+        window.scheduleFromLibrary = (index) => {
+            const lib = loadLibrary();
+            const item = lib[index];
+            
+            const time = prompt(`Hẹn giờ phát cho "${item.name}" (HH:mm):`, item.scheduledAt || '09:00');
+            if (time === null) return;
+            
+            if (time === '') {
+                delete item.scheduledAt;
+                saveLibrary(lib);
+                alert('Đã hủy hẹn giờ cho nội dung này.');
+                return;
+            }
+
+            if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time)) {
+                alert('Sai định dạng thời gian. Vui lòng nhập HH:mm.');
+                return;
+            }
+
+            item.scheduledAt = time;
+            saveLibrary(lib);
+            alert(`Đã đặt lịch phát lúc ${time}`);
+        };
+
+        // Logic check hẹn giờ tự động
+        let lastCheckedMinute = "";
+        setInterval(() => {
+            const now = new Date();
+            const currentMinute = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            
+            if (currentMinute !== lastCheckedMinute) {
+                lastCheckedMinute = currentMinute;
+                
+                const lib = loadLibrary();
+                lib.forEach(async (item) => {
+                    if (item.scheduledAt === currentMinute) {
+                        console.log("Phát tự động nội dung hẹn giờ:", item.name);
+                        try {
+                            await set(liveBroadcastRef, {
+                                message: item.text,
+                                timestamp: Date.now(),
+                                active: true,
+                                target: item.target || 'all'
+                            });
+                        } catch(e) {
+                            console.error("Lỗi phát tự động:", e);
+                        }
+                    }
+                });
+            }
+        }, 10000); // Check mỗi 10 giây
+
+        // Workspace navigation keeps every original control mounted.
+        document.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => {
+            document.querySelectorAll('.workspace-panel').forEach(panel => panel.hidden = panel.id !== 'panel-' + button.dataset.panel);
+            document.querySelectorAll('[data-panel]').forEach(tab => { tab.classList.toggle('selected', tab === button); tab.setAttribute('aria-pressed', String(tab === button)); });
+        }));
+        document.getElementById('auto-delete-enabled').checked = expirySettings.enabled;
+        document.getElementById('auto-delete-minutes').value = expirySettings.minutes;
+        document.getElementById('save-expiry').addEventListener('click', () => {
+            const minutes = Number(document.getElementById('auto-delete-minutes').value);
+            if (!Number.isInteger(minutes) || minutes < 1 || minutes > 1440) { alert('Chọn từ 1 đến 1440 phút.'); return; }
+            expirySettings = {enabled: document.getElementById('auto-delete-enabled').checked, minutes};
+            try { localStorage.setItem('ideco_live_expiry', JSON.stringify(expirySettings));
+                document.getElementById('expiry-settings-status').textContent = 'Đã lưu. Áp dụng từ lần phát kế tiếp.';
+            } catch(e) { document.getElementById('expiry-settings-status').textContent = 'Chỉ áp dụng trong phiên này; trình duyệt không cho lưu.'; }
+            updateExpiryDisplay();
+        });
+        function updateExpiryDisplay() {
+            const countdown = document.getElementById('expiry-countdown');
+            document.getElementById('session-label').textContent = latestLive?.message ? 'Có thông báo LIVE' : 'Sẵn sàng phát';
+            if (!latestLive?.message) { countdown.textContent = expirySettings.enabled ? 'Tự xóa sau ' + expirySettings.minutes + ' phút' : 'Tự xóa đang tắt'; return; }
+            if (!latestLive.expiresAt) { countdown.textContent = 'LIVE này không có hạn tự xóa'; return; }
+            const seconds = Math.max(0, Math.ceil((latestLive.expiresAt - serverNow()) / 1000));
+            countdown.textContent = seconds ? 'Tự xóa sau ' + String(Math.floor(seconds / 60)).padStart(2,'0') + ':' + String(seconds % 60).padStart(2,'0') : 'LIVE hết hạn · đang xóa';
+            if (!seconds) {
+                broadcastViewer.style.display = 'none'; broadcastViewer.classList.remove('active');
+                fullTargetText = ''; displayedText = ''; viewerTextEl.textContent = '';
+                if (typingInterval) { clearInterval(typingInterval); typingInterval = null; }
+                deleteLive(latestLive);
+            }
+        }
+        onValue(liveBroadcastRef, snap => {
+            latestLive = snap.val();
+            if (micSession && (!latestLive || latestLive.sessionId !== micSession.sessionId)) stopMicSilently();
+            updateExpiryDisplay();
+        });
+        setInterval(updateExpiryDisplay, 1000);
+        document.addEventListener('visibilitychange', updateExpiryDisplay);
+        window.addEventListener('online', updateExpiryDisplay);
+        document.getElementById('delete-live-now').addEventListener('click', () => {
+            if (!latestLive?.message) { alert('Chưa có thông báo LIVE để xóa.'); return; }
+            if (confirm('Xóa thông báo LIVE đang phát? Bản soạn và thư viện được giữ lại.')) deleteLive(latestLive, true);
+        });
+        const keyInput = document.getElementById('ai-key');
+        const modelInput = document.getElementById('ai-model');
+        try { keyInput.value = localStorage.getItem('ideco_gemini_key') || ''; modelInput.value = localStorage.getItem('ideco_gemini_model') || 'gemini-2.5-flash'; } catch(e) {}
+        document.getElementById('remember-key').checked = !!keyInput.value;
+        document.getElementById('toggle-key').addEventListener('click', e => { keyInput.type = keyInput.type === 'password' ? 'text' : 'password'; e.target.textContent = keyInput.type === 'password' ? 'Hiện' : 'Ẩn'; });
+        document.getElementById('save-ai-settings').addEventListener('click', () => {
+            try {
+                localStorage.setItem('ideco_gemini_model', modelInput.value.trim());
+                if (document.getElementById('remember-key').checked) localStorage.setItem('ideco_gemini_key', keyInput.value.trim());
+                else localStorage.removeItem('ideco_gemini_key');
+                document.getElementById('ai-settings-status').textContent = ' Đã áp dụng.';
+            } catch(e) { document.getElementById('ai-settings-status').textContent = ' Áp dụng trong phiên này.'; }
+        });
+        enhanceResultEl.addEventListener('input', () => { enhancedTextResult = enhanceResultEl.innerText; });
+        // Close the mic before a destructive global reset, so no delayed push can restore it.
+        deleteAllButton.addEventListener('click', () => { if (isLiveActive) stopMicSilently(); }, {capture: true});
+
+        renderLibrary();
+
+    </script>
+<dialog id="pwa-help" class="pwa-dialog" aria-labelledby="pwa-title"><h2 id="pwa-title">Cài IDECO LiveVoice</h2><ol><li><b>Android:</b> mở website bằng Chrome, chọn menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.</li><li><b>iPhone / iPad:</b> mở bằng Safari, bấm Chia sẻ → Thêm vào màn hình chính → Thêm. Bật “Mở dưới dạng ứng dụng” nếu được hỏi.</li></ol><p>Mở bằng liên kết website HTTPS sau khi đưa toàn bộ bộ cài lên hosting. Không cài trực tiếp từ file ZIP hoặc file HTML tải về.</p><p>PWA vẫn cần mạng cho Firebase, LIVE và AI; cài ra màn hình không giúp ứng dụng chạy nền khi điện thoại ngủ.</p><p id="pwa-status" role="status"></p><form method="dialog"><button class="secondary">Đã hiểu</button></form></dialog>
+<script src="./pwa.js" defer></script>
+</body>
+</html>

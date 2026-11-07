@@ -1,0 +1,69 @@
+IDECO LIVEVOICE STUDIO 2.0 — HTML ĐỘC LẬP
+
+CÁCH CHẠY
+1. Giải nén, lấy file index.html đưa lên GitHub Pages hoặc website HTTPS.
+2. Mở website trên điện thoại hoặc máy tính. Cho phép micro khi được hỏi.
+3. Vào Cài đặt > Kết nối Gemini AI, nhập API Key và model mà tài khoản hỗ trợ.
+Không cần npm, React, Vite hoặc build. Cần Internet để tải Firebase và gọi AI.
+Micro tùy thuộc khả năng SpeechRecognition và quyền của trình duyệt/thiết bị.
+
+CÁC TÍNH NĂNG GIỮ LẠI
+- Soạn thông báo, đếm từ, kéo chiều cao ô nhập, xóa nội dung.
+- Chuyển giọng nói tiếng Việt thành chữ, LIVE chuyển lời nói thành văn bản và đồng bộ Firebase.
+- Gửi toàn bộ hoặc chỉ định người nhận theo tên.
+- AI: lãnh đạo, trò chuyện, Huyền AI, sửa lỗi; phong cách vùng miền và mức sáng tạo.
+- Chỉnh sửa tay kết quả AI, áp dụng, lưu, phát và hẹn giờ.
+- Thư viện nội dung trên trình duyệt: lưu, phát lại, hẹn giờ, xóa.
+- Lịch tuần (HH:mm, cách nhau bằng dấu phẩy) được lưu vào scheduleConfig như bản gốc.
+- Popup chạy chữ và xác nhận đã đọc; xem/xóa danh sách đã đọc.
+- Xóa dữ liệu hệ thống có hộp xác nhận.
+
+TỰ XÓA LIVE
+Mặc định bật 10 phút. Vào Cài đặt để thay đổi từ 1 đến 1440 phút hoặc tắt.
+Thời gian tính từ lúc bắt đầu mỗi phiên; lời nói cập nhật không gia hạn bộ đếm.
+Áp dụng cho micro LIVE, nội dung AI, thư viện và hẹn giờ từ thư viện.
+Khi hết hạn: dừng mic LIVE của phiên đó, ẩn popup hết hạn và xóa liveBroadcast trên Firebase.
+Không xóa bản soạn, thư viện, lịch hoặc danh sách người đọc.
+Có nút Xóa LIVE ngay. Thiết lập lưu trên từng trình duyệt và áp dụng cho phiên tiếp theo.
+LIVE cũ chưa có expiresAt không tự được gán hạn: dùng Xóa LIVE ngay hoặc phát lại.
+Dùng giao dịch kiểm tra sessionId để phiên cũ không xóa nhầm phiên mới.
+
+GIỚI HẠN HTML THUẦN
+Trang phải đang mở, hoạt động và có mạng để việc xóa trên Firebase diễn ra đúng hạn.
+Khi thiết bị ngủ, đóng trang hoặc mất mạng, không bảo đảm xóa đúng phút trên máy chủ.
+Bản này kiểm tra expiresAt khi nhận dữ liệu, khi quay lại trang và mỗi giây;
+LIVE hết hạn được ẩn ngay khi trang hoạt động trở lại, sau đó thử xóa.
+Muốn máy chủ tự xóa khi mọi thiết bị đều đóng cần tác vụ backend (không nằm trong file HTML).
+Các ứng dụng khác đang nghe liveBroadcast cần đọc expiresAt để tự ẩn bản phát hết hạn.
+Lịch thư viện chỉ chạy khi trang mở, theo giờ thiết bị; lịch tuần vẫn cần ứng dụng nhận lịch gốc.
+
+DỮ LIỆU VÀ CẤU HÌNH
+Giữ cấu hình Firebase gốc và các đường dẫn scheduleConfig, liveBroadcast, liveReaders.
+Giữ các khóa lưu thư viện và phong cách cũ khi dùng cùng origin/trình duyệt.
+Đổi địa chỉ website hoặc thiết bị không tự chuyển thư viện localStorage.
+API Key AI không được nhúng sẵn. Có tùy chọn lưu trên thiết bị cá nhân.
+Ứng dụng không bổ sung đăng nhập; quyền đọc/ghi vẫn theo Firebase Rules hiện tại.
+LIVE là gửi văn bản, không phải phát trực tiếp tệp âm thanh, đúng cơ chế gốc.
+
+KIỂM TRA
+- Kiểm tra cú pháp JavaScript và đầy đủ các control ID so với bản gốc.
+- Kiểm tra giao diện desktop và khung mobile 390px bằng dữ liệu mô phỏng.
+- Kiểm tra lưu thời gian tự xóa trên giao diện.
+- Kiểm thử bộ đếm mặc định 10 phút, giữ hạn trong phiên mic, xóa khi hết hạn,
+  không xóa phiên mới và tắt tự xóa bằng đồng hồ/Firebase mô phỏng.
+- Chưa kiểm thử ghi âm trên điện thoại thật, API Gemini có khóa thật hay ghi/xóa
+  trên Firebase thật. Không thay đổi dữ liệu đang hoạt động trong quá trình kiểm tra.
+
+BỔ SUNG V2.1 — CÀI PWA ANDROID / iOS
+- Đưa TOÀN BỘ nội dung giải nén lên cùng thư mục website HTTPS, gồm index.html,
+  pwa.js, sw.js, manifest.webmanifest, offline.html và thư mục icons.
+- Các đường dẫn tương đối hỗ trợ GitHub Pages dạng /ten-repository/.
+- Android: mở Chrome, bấm Cài ứng dụng; nếu chưa hiện lời mời cài, dùng menu ⋮.
+- iPhone/iPad: Safari > Chia sẻ > Thêm vào màn hình chính > Thêm.
+- Tên biểu tượng: IDECO LiveVoice; biểu tượng IDECO đỏ theo nhận diện của bản HTML.
+  Chưa tích hợp ảnh logo trong tin nhắn vì tệp ảnh chưa có trong lượt làm việc này.
+- Mở từ biểu tượng để dùng chế độ ứng dụng riêng, không có thanh địa chỉ trình duyệt.
+- Khi mất mạng, màn hình hướng dẫn kết nối lại xuất hiện sau khi service worker đã cài.
+  Không lưu phản hồi AI hoặc dữ liệu Firebase vào bộ nhớ cache PWA.
+- PWA không tự chạy LIVE/hẹn xóa khi tắt máy hoặc đóng ứng dụng.
+- Cài đặt PWA trên điện thoại thật chưa được kiểm chứng trong môi trường này.
