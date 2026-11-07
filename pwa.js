@@ -17,7 +17,7 @@
   if ('serviceWorker' in navigator && window.isSecureContext && /^https?:$/.test(location.protocol)) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js', {scope:'./', updateViaCache:'none'})
-        .catch(() => { status.textContent = 'Chưa chuẩn bị được bộ cài. Kiểm tra đã tải đủ sw.js, manifest.webmanifest và thư mục icons lên website.'; });
+        .catch(() => { status.textContent = 'Chưa chuẩn bị được bộ cài. Kiểm tra đã tải đủ sw.js, manifest.json và các file biểu tượng PNG lên website.'; });
     });
   } else { status.textContent = 'Vui lòng mở ứng dụng từ website HTTPS để cài đặt.'; }
 })();

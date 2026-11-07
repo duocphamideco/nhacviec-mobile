@@ -1,7 +1,7 @@
 IDECO LIVEVOICE STUDIO 2.0 — HTML ĐỘC LẬP
 
 CÁCH CHẠY
-1. Giải nén, lấy file index.html đưa lên GitHub Pages hoặc website HTTPS.
+1. Giải nén, tải toàn bộ file lên cùng một thư mục trên GitHub Pages hoặc website HTTPS.
 2. Mở website trên điện thoại hoặc máy tính. Cho phép micro khi được hỏi.
 3. Vào Cài đặt > Kết nối Gemini AI, nhập API Key và model mà tài khoản hỗ trợ.
 Không cần npm, React, Vite hoặc build. Cần Internet để tải Firebase và gọi AI.
@@ -54,16 +54,24 @@ KIỂM TRA
 - Chưa kiểm thử ghi âm trên điện thoại thật, API Gemini có khóa thật hay ghi/xóa
   trên Firebase thật. Không thay đổi dữ liệu đang hoạt động trong quá trình kiểm tra.
 
-BỔ SUNG V2.1 — CÀI PWA ANDROID / iOS
-- Đưa TOÀN BỘ nội dung giải nén lên cùng thư mục website HTTPS, gồm index.html,
-  pwa.js, sw.js, manifest.webmanifest, offline.html và thư mục icons.
-- Các đường dẫn tương đối hỗ trợ GitHub Pages dạng /ten-repository/.
-- Android: mở Chrome, bấm Cài ứng dụng; nếu chưa hiện lời mời cài, dùng menu ⋮.
-- iPhone/iPad: Safari > Chia sẻ > Thêm vào màn hình chính > Thêm.
-- Tên biểu tượng: IDECO LiveVoice; biểu tượng IDECO đỏ theo nhận diện của bản HTML.
-  Chưa tích hợp ảnh logo trong tin nhắn vì tệp ảnh chưa có trong lượt làm việc này.
-- Mở từ biểu tượng để dùng chế độ ứng dụng riêng, không có thanh địa chỉ trình duyệt.
-- Khi mất mạng, màn hình hướng dẫn kết nối lại xuất hiện sau khi service worker đã cài.
-  Không lưu phản hồi AI hoặc dữ liệu Firebase vào bộ nhớ cache PWA.
-- PWA không tự chạy LIVE/hẹn xóa khi tắt máy hoặc đóng ứng dụng.
-- Cài đặt PWA trên điện thoại thật chưa được kiểm chứng trong môi trường này.
+BỔ SUNG V2.2 — BIỂU TƯỢNG TRÊN ANDROID VÀ IPHONE
+1. Giải nén ZIP rồi tải toàn bộ nội dung lên thư mục website LiveVoice.
+   Giữ index.html, manifest.json, sw.js, pwa.js, offline.html và các PNG cùng cấp.
+   Nếu cập nhật bản cũ, hãy dùng cùng địa chỉ website để giữ dữ liệu trình duyệt.
+2. Mở địa chỉ HTTPS của thư mục website trong Chrome (Android) hoặc Safari (iPhone).
+3. Android dùng nút “Cài ứng dụng” hoặc menu ⋮ > “Cài đặt ứng dụng”.
+   iPhone dùng nút Chia sẻ > “Thêm vào màn hình chính” > “Thêm”.
+   Bật “Mở dưới dạng ứng dụng” nếu được hỏi.
+4. Nếu vẫn thấy biểu tượng cũ, gỡ riêng biểu tượng cũ, tải lại website rồi cài lại.
+   Trên iPhone, gỡ bản đã cài có thể xóa dữ liệu chỉ lưu trong bản đó.
+   Giữ lại các nội dung thư viện cục bộ cần thiết trước khi gỡ.
+Biểu tượng hiển thị là IDECO LiveVoice. Bộ cài dùng cấu trúc giống Huyền Mobile:
+manifest.json, biểu tượng PNG thường và maskable riêng, apple-touch-icon cho iOS.
+
+BỔ SUNG V2.3 — GEMINI 3.8 FLASH
+Mục Trợ lý AI dùng model mặc định gemini-3.8-flash. Nếu bản trước lưu Gemini 2.5
+Flash, bản này chuyển sang 3.8 Flash. Những mã model tùy chỉnh khác được giữ.
+Anh có thể đổi model trong Cài đặt > Kết nối Gemini AI.
+3.8 Flash dùng mức suy luận low để ưu tiên thời gian phản hồi khi soạn tin.
+Thanh độ dài và sáng tạo vẫn điều chỉnh hướng dẫn viết gửi cho model.
+Tài liệu Google: https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash

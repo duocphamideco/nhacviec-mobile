@@ -1,19 +1,51 @@
-const PREFIX = 'ideco-livevoice-' + new URL(self.registration.scope).pathname + '-';
-const CACHE = PREFIX + 'v2.1.0';
-const ASSETS = ['offline.html','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png','icons/favicon.png'];
+const scope = new URL(self.registration.scope);
+const cachePrefix = 'ideco-livevoice-' + scope.pathname + '-';
+const cacheName = cachePrefix + 'v2.2.0';
+const assets = [
+  'offline.html', 'icon-192.png', 'icon-512.png',
+  'icon-maskable-192.png', 'icon-maskable-512.png',
+  'apple-touch-icon.png', 'favicon-48.png'
+].map(path => new URL(path, scope).href);
+
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
+  event.waitUntil((async () => {
+    const cache = await caches.open(cacheName);
+    // A missing optional asset should not block registration.
+    await Promise.allSettled(assets.map(url => cache.add(url)));
+    await self.skipWaiting();
+  })());
 });
+
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith(PREFIX) && key !== CACHE).map(key => caches.delete(key)))));
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys
+      .filter(key => key.startsWith(cachePrefix) && key !== cacheName)
+      .map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
+
 self.addEventListener('fetch', event => {
-  const request = event.request, url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin || !url.href.startsWith(self.registration.scope)) return;
-  // Firebase and AI requests are never stored in this cache.
+  const { request } = event;
+  if (request.method !== 'GET' || !request.url.startsWith(scope.href)) return;
   if (request.mode === 'navigate') {
-    event.respondWith(fetch(request).catch(() => caches.match(new URL('offline.html',self.registration.scope).href)));
-  } else if (ASSETS.some(path => url.href === new URL(path,self.registration.scope).href)) {
-    event.respondWith(caches.match(request).then(cached => cached || fetch(request)));
+    event.respondWith((async () => {
+      try {
+        return await fetch(request);
+      } catch {
+        const cache = await caches.open(cacheName);
+        return await cache.match(new URL('offline.html', scope).href) ||
+          new Response('LiveVoice cần Internet. Vui lòng kết nối rồi mở lại.', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+          });
+      }
+    })());
+  } else if (assets.includes(request.url)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(cacheName);
+      return await cache.match(request) || fetch(request);
+    })());
   }
 });

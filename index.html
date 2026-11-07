@@ -638,14 +638,14 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
 
     </style>
-<link rel="manifest" href="./manifest.webmanifest">
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#a9233e">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="LiveVoice">
+<meta name="apple-mobile-web-app-title" content="IDECO LiveVoice">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" href="./icons/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" href="./favicon-48.png">
 <style>.install-button{background:#f8edef;border:1px solid #e8cbd0;color:#a9233e;border-radius:10px;padding:8px 12px;font-size:12px}.pwa-dialog{max-width:440px;width:calc(100% - 32px);border:0;border-radius:18px;padding:24px;color:#292c38;box-shadow:0 20px 100px #0004}.pwa-dialog::backdrop{background:#1b203b80}.pwa-dialog h2{font-size:20px}.pwa-dialog li{margin:12px 0}.pwa-dialog p{font-size:13px;color:#736c76}.app-header{padding-top:max(12px,env(safe-area-inset-top))}</style>
 </head>
 <body>
@@ -796,7 +796,7 @@
 <div class="setting-block"><label for="auto-delete-enabled" class="toggle-row"><span>Tự động xóa thông báo LIVE<small>Xóa bản phát trên Firebase khi hết hạn.</small></span><input type="checkbox" id="auto-delete-enabled" checked></label>
 <label for="auto-delete-minutes">Thời gian kể từ lúc bắt đầu phát (phút)</label><input id="auto-delete-minutes" type="number" min="1" max="1440" value="10"><p class="helper">Mặc định 10 phút. Áp dụng cho phiên phát tiếp theo, gồm mic LIVE, nội dung AI, thư viện và lịch phát.</p><button id="save-expiry" class="secondary">Lưu thời gian tự xóa</button><p id="expiry-settings-status" role="status"></p></div>
 <div class="note">Giữ trang mở và kết nối mạng để xóa đúng hạn trên Firebase. Khi mở lại, bản này kiểm tra hạn và ẩn LIVE hết hạn ngay. Các ứng dụng nhận LIVE phiên bản cũ cần được cập nhật để đọc hạn dùng. Bản soạn, lịch phát, thư viện và danh sách đã đọc được giữ lại.</div>
-<div class="setting-block"><h2>Kết nối Gemini AI</h2><label for="ai-key">API Key</label><div class="key-row"><input id="ai-key" type="password" autocomplete="off" placeholder="Nhập Gemini API Key"><button id="toggle-key" class="secondary" aria-label="Hiện hoặc ẩn API Key">Hiện</button></div><label for="ai-model">Model</label><input id="ai-model" type="text" value="gemini-2.5-flash"><label class="check-label"><input id="remember-key" type="checkbox"> Lưu khóa trên trình duyệt này</label><p class="helper">Chỉ bật trên thiết bị cá nhân. Khóa không được gửi vào Firebase; người dùng có quyền truy cập trình duyệt có thể xem khóa đã lưu.</p><button id="save-ai-settings" class="secondary">Lưu cài đặt AI</button><span id="ai-settings-status" role="status"></span></div></section></div><aside class="side-column"><div class="guide-card"><span class="section-kicker">QUY TRÌNH NHANH</span><h3>Thông điệp rõ ràng.<br>Đội ngũ đồng lòng.</h3><ol><li><b>Soạn nội dung</b><span>Gõ hoặc đọc lời nhắn bằng micro.</span></li><li><b>Chọn đúng người</b><span>Gửi toàn bộ hoặc chỉ định tên.</span></li><li><b>Phát và theo dõi</b><span>LIVE tức thì, xem ai đã đọc.</span></li></ol></div><div class="side-note"><b>Không gian của IDECO</b><p>Micro chuyển giọng nói thành chữ. LIVE gửi văn bản tới các thiết bị, như ứng dụng gốc.</p><p>Lịch từ thư viện chạy khi trang đang mở. Micro cần HTTPS và quyền truy cập.</p></div></aside></div></main>    <div class="sticky-footer">
+<div class="setting-block"><h2>Kết nối Gemini AI</h2><label for="ai-key">API Key</label><div class="key-row"><input id="ai-key" type="password" autocomplete="off" placeholder="Nhập Gemini API Key"><button id="toggle-key" class="secondary" aria-label="Hiện hoặc ẩn API Key">Hiện</button></div><label for="ai-model">Model</label><input id="ai-model" type="text" value="gemini-3.8-flash"><label class="check-label"><input id="remember-key" type="checkbox"> Lưu khóa trên trình duyệt này</label><p class="helper">Chỉ bật trên thiết bị cá nhân. Khóa không được gửi vào Firebase; người dùng có quyền truy cập trình duyệt có thể xem khóa đã lưu.</p><button id="save-ai-settings" class="secondary">Lưu cài đặt AI</button><span id="ai-settings-status" role="status"></span></div></section></div><aside class="side-column"><div class="guide-card"><span class="section-kicker">QUY TRÌNH NHANH</span><h3>Thông điệp rõ ràng.<br>Đội ngũ đồng lòng.</h3><ol><li><b>Soạn nội dung</b><span>Gõ hoặc đọc lời nhắn bằng micro.</span></li><li><b>Chọn đúng người</b><span>Gửi toàn bộ hoặc chỉ định tên.</span></li><li><b>Phát và theo dõi</b><span>LIVE tức thì, xem ai đã đọc.</span></li></ol></div><div class="side-note"><b>Không gian của IDECO</b><p>Micro chuyển giọng nói thành chữ. LIVE gửi văn bản tới các thiết bị, như ứng dụng gốc.</p><p>Lịch từ thư viện chạy khi trang đang mở. Micro cần HTTPS và quyền truy cập.</p></div></aside></div></main>    <div class="sticky-footer">
         <div id="status" class="loading">Đang kết nối...</div>
         <button id="live-voice-button" class="btn-live-voice">🔴 LIVE VOICE — Phát ngay tức thì</button>
         <button id="save-button" class="btn-save">LƯU CẤU HÌNH</button>
@@ -1466,26 +1466,24 @@
 
                 const fullPrompt = `${promptConfig}${accentInstruction}${lengthInstruction}\n\nVăn bản gốc:\n${raw}`;
 
-                const modelsToTry = [document.getElementById('ai-model').value.trim() || 'gemini-2.5-flash'];
-                let response = null;
-                
-                for (const model of modelsToTry) {
-                    response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=` + apiKey, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{ text: fullPrompt }]
-                            }],
-                            generationConfig: {
-                                temperature: creativityValue
-                            }
-                        })
-                    });
-                    if (response.ok || response.status !== 404) {
-                        break;
-                    }
+                const model = modelInput.value.trim().replace(/^models\//, '') || defaultGeminiModel;
+                if (!/^[a-z0-9][a-z0-9._-]*$/i.test(model)) {
+                    throw new Error('Mã model Gemini không hợp lệ. Kiểm tra lại trong Cài đặt.');
                 }
+                const generationConfig = model === defaultGeminiModel
+                    ? { thinkingConfig: { thinkingLevel: 'low' } }
+                    : { temperature: creativityValue };
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: fullPrompt }] }],
+                            generationConfig
+                        })
+                    }
+                );
 
                 if (!response.ok) {
                     let errorMsg = 'Lỗi không xác định (' + response.status + ')';
@@ -1505,7 +1503,12 @@
                 }
 
                 const data = await response.json();
-                enhancedTextResult = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+                const parts = data.candidates?.[0]?.content?.parts || [];
+                enhancedTextResult = parts
+                    .filter(part => !part.thought && typeof part.text === 'string')
+                    .map(part => part.text)
+                    .join('')
+                    .trim();
 
                 if (enhancedTextResult) {
 
@@ -1997,12 +2000,19 @@
         });
         const keyInput = document.getElementById('ai-key');
         const modelInput = document.getElementById('ai-model');
-        try { keyInput.value = localStorage.getItem('ideco_gemini_key') || ''; modelInput.value = localStorage.getItem('ideco_gemini_model') || 'gemini-2.5-flash'; } catch(e) {}
+        const defaultGeminiModel = modelInput.defaultValue;
+        const geminiModelPreference = 'ideco_gemini_model_v2';
+        try {
+            keyInput.value = localStorage.getItem('ideco_gemini_key') || '';
+            const previousModel = localStorage.getItem('ideco_gemini_model')?.trim();
+            const migratedModel = previousModel === 'gemini-2.5-flash' ? defaultGeminiModel : previousModel;
+            modelInput.value = localStorage.getItem(geminiModelPreference) || migratedModel || defaultGeminiModel;
+        } catch (e) {}
         document.getElementById('remember-key').checked = !!keyInput.value;
         document.getElementById('toggle-key').addEventListener('click', e => { keyInput.type = keyInput.type === 'password' ? 'text' : 'password'; e.target.textContent = keyInput.type === 'password' ? 'Hiện' : 'Ẩn'; });
         document.getElementById('save-ai-settings').addEventListener('click', () => {
             try {
-                localStorage.setItem('ideco_gemini_model', modelInput.value.trim());
+                localStorage.setItem(geminiModelPreference, modelInput.value.trim() || defaultGeminiModel);
                 if (document.getElementById('remember-key').checked) localStorage.setItem('ideco_gemini_key', keyInput.value.trim());
                 else localStorage.removeItem('ideco_gemini_key');
                 document.getElementById('ai-settings-status').textContent = ' Đã áp dụng.';
@@ -2015,7 +2025,7 @@
         renderLibrary();
 
     </script>
-<dialog id="pwa-help" class="pwa-dialog" aria-labelledby="pwa-title"><h2 id="pwa-title">Cài IDECO LiveVoice</h2><ol><li><b>Android:</b> mở website bằng Chrome, chọn menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.</li><li><b>iPhone / iPad:</b> mở bằng Safari, bấm Chia sẻ → Thêm vào màn hình chính → Thêm. Bật “Mở dưới dạng ứng dụng” nếu được hỏi.</li></ol><p>Mở bằng liên kết website HTTPS sau khi đưa toàn bộ bộ cài lên hosting. Không cài trực tiếp từ file ZIP hoặc file HTML tải về.</p><p>PWA vẫn cần mạng cho Firebase, LIVE và AI; cài ra màn hình không giúp ứng dụng chạy nền khi điện thoại ngủ.</p><p id="pwa-status" role="status"></p><form method="dialog"><button class="secondary">Đã hiểu</button></form></dialog>
-<script src="./pwa.js" defer></script>
+<dialog id="pwa-help" class="pwa-dialog" aria-labelledby="pwa-title"><h2 id="pwa-title">Cài IDECO LiveVoice</h2><ol><li><b>Android:</b> mở website bằng Chrome, chọn menu ⋮ → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.</li><li><b>iPhone / iPad:</b> mở bằng Safari, bấm Chia sẻ → Thêm vào màn hình chính → Thêm. Bật “Mở dưới dạng ứng dụng” nếu được hỏi.</li></ol><p>Mở bằng liên kết website HTTPS sau khi đưa toàn bộ bộ cài lên hosting. Không cài trực tiếp từ file ZIP hoặc file HTML tải về.</p><p>Nếu màn hình chính vẫn hiện biểu tượng cũ, gỡ biểu tượng cũ, tải lại trang và thêm ứng dụng lần nữa.</p><p id="pwa-status" role="status"></p><form method="dialog"><button class="secondary">Đã hiểu</button></form></dialog>
+<script src="./pwa.js?v=2.2" defer></script>
 </body>
 </html>
